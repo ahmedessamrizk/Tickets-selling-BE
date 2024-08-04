@@ -2,6 +2,7 @@ import * as bcrypt from 'bcrypt';
 import { User } from '../users/schema/users.schema';
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -13,6 +14,7 @@ import { SigninDto } from './dtos/signin-dto';
 import * as jwt from 'jsonwebtoken';
 import { JwtPayload } from './jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
+import { Role } from 'src/common/enums/roles.enum';
 
 @Injectable()
 export class AuthService {
@@ -74,5 +76,10 @@ export class AuthService {
   private async hashPassword(password: string): Promise<string> {
     const saltRounds = this.configService.get<string>('SALT_ROUNDS');
     return bcrypt.hash(password, Number(saltRounds));
+  }
+
+  async createAdmin(createUserDto: Partial<CreateUserDto>): Promise<void> {
+    Object.assign(createUserDto, { role: Role.Admin });
+    return this.signup(createUserDto);
   }
 }
