@@ -7,11 +7,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
-import { EncryptionService } from 'src/common/services/encryption.service';
+import { EncryptionService } from '../../common/services/encryption.service';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import { SigninDto } from './dtos/signin-dto';
-import * as jwt from 'jsonwebtoken';
 import { JwtPayload } from './jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { Role } from 'src/common/enums/roles.enum';
