@@ -10,10 +10,10 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { SigninDto } from './dtos/signin-dto';
 import { Response } from 'express';
-import { Public } from 'src/common/decorators/public.decorator';
-import { RolesGuard } from 'src/common/guards/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Role } from 'src/common/enums/roles.enum';
+import { Public } from '../../common/decorators/public.decorator';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { Role } from '../../common/enums/roles.enum';
 
 @Controller('/auth')
 export class AuthController {

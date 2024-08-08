@@ -1,6 +1,6 @@
 import * as CryptoJS from 'crypto-js';
 import { ConfigService } from '@nestjs/config';
-import { EncryptionService } from 'src/common/services/encryption.service';
+import { EncryptionService } from '../../../common/services/encryption.service';
 
 export function decryptNationalIdHook(schema) {
   const encryptionService = new EncryptionService(new ConfigService());

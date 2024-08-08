@@ -4,7 +4,7 @@ import { User } from '../users/schema/users.schema';
 import { CreateTicketDto } from './dtos/create-ticket.dto';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { Role } from 'src/common/enums/roles.enum';
+import { Role } from '../../common/enums/roles.enum';
 
 @Injectable()
 export class TicketsService {

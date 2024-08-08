@@ -7,15 +7,15 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from './schema/users.schema';
-import { Serialize } from 'src/common/interceptors/serialize.interceptor';
+import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { UserDto } from './dtos/user.dto';
 import { UsersService } from './users.service';
 import { Response } from 'express';
 import { Role } from '../../common/enums/roles.enum';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { RolesGuard } from '../../common/guards/roles.guard';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { GetUsersDto } from './dtos/find-users.dto';
 import { UpdateRoleDto } from './dtos/update-role.dto';

@@ -13,7 +13,7 @@ import { UsersService } from '../users/users.service';
 import { SigninDto } from './dtos/signin-dto';
 import { JwtPayload } from './jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
-import { Role } from 'src/common/enums/roles.enum';
+import { Role } from '../../common/enums/roles.enum';
 
 @Injectable()
 export class AuthService {
