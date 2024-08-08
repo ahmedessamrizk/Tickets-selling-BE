@@ -35,6 +35,7 @@ export class TicketsService {
     if (!user || user.role === Role.User) {
       expose = { quantity: 0 };
     }
+    console.log('tickeeeeeeeets: ');
 
     const tickets = await this.ticketModel
       .find()
@@ -46,17 +47,21 @@ export class TicketsService {
       ])
       .select(expose);
 
+    console.log('tickeeeeeeeets: ', tickets);
     return tickets;
   }
 
   async update(updateTicketDto: Partial<CreateTicketDto>): Promise<Ticket> {
     //check if ticket exists
     //check if this user can update this ticket if he is admin
-    
+
     //check if user updates ticket name ==> then it is unique
     //update ticket and return it
-   
 
-    return this.ticketModel.findOneAndUpdate({ name: updateTicketDto.name }, updateTicketDto, { new: true });
+    return this.ticketModel.findOneAndUpdate(
+      { name: updateTicketDto.name },
+      updateTicketDto,
+      { new: true },
+    );
   }
 }
