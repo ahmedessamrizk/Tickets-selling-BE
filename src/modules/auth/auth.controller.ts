@@ -33,6 +33,7 @@ export class AuthController {
     res.cookie('accessToken', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
     });
     res.json({ message: 'successful', statusCode: 200 });
   }
