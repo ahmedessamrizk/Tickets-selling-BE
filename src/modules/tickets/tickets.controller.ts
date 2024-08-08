@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import { TicketsService } from './tickets.service';
 import { Ticket } from './schema/tickets.schema';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -36,5 +36,11 @@ export class TicketsController {
     return this.ticketsService.findAll(user);
   }
 
-  
+  @Patch()
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(RolesGuard)
+  updateTicket(@Body() updateTicketDto: Partial<CreateTicketDto>, @CurrentUser() user: User): Promise<Ticket> {
+    return this.ticketsService.update(updateTicketDto, user);
+
+  }
 }

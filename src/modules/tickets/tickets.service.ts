@@ -12,10 +12,7 @@ export class TicketsService {
 
   async create(createTicketDto: CreateTicketDto, user: User): Promise<Ticket> {
     // Check if ticket already exists with this name
-    const ticket = await this.findOne({ name: createTicketDto.name });
-    if (ticket) {
-      throw new ConflictException('Ticket already exists');
-    }
+    this.checkValid(createTicketDto);
 
     Object.assign(createTicketDto, { createdBy: user._id });
     return this.ticketModel.create(createTicketDto);
@@ -23,6 +20,13 @@ export class TicketsService {
 
   findOne(query: Partial<Ticket>): Promise<Ticket> {
     return this.ticketModel.findOne(query);
+  }
+
+  async checkValid(createTicketDto: CreateTicketDto): Promise<void> {
+    const ticket = await this.findOne({ name: createTicketDto.name });
+    if (ticket) {
+      throw new ConflictException('Ticket already exists');
+    }
   }
 
   async findAll(user: User): Promise<Ticket[]> {
@@ -43,5 +47,16 @@ export class TicketsService {
       .select(expose);
 
     return tickets;
+  }
+
+  async update(updateTicketDto: Partial<CreateTicketDto>): Promise<Ticket> {
+    //check if ticket exists
+    //check if this user can update this ticket if he is admin
+    
+    //check if user updates ticket name ==> then it is unique
+    //update ticket and return it
+   
+
+    return this.ticketModel.findOneAndUpdate({ name: updateTicketDto.name }, updateTicketDto, { new: true });
   }
 }
