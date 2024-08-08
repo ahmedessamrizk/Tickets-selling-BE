@@ -9,6 +9,7 @@ import { PaymentModule } from './modules/payment/payment.module';
 import * as path from 'path';
 import { APP_PIPE } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
+import { AppController } from './app.controller';
 
 // import { CurrentUserMiddleware } from './common/middleware/current-user.middleware';
 
@@ -49,6 +50,7 @@ import cookieParser from 'cookie-parser';
       }),
     },
   ],
+  controllers: [AppController],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
