@@ -32,8 +32,8 @@ export class AuthController {
     const token = await this.authService.signin(body);
     res.cookie('accessToken', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'none',
+      secure: true,
     });
     res.json({ message: 'successful', statusCode: 200 });
   }

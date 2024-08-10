@@ -33,7 +33,11 @@ export class UsersController {
 
   @Get('/logout')
   logout(@Res() res: Response): Response {
-    res.clearCookie('accessToken');
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+    });
     return res.json({ message: 'Logged out successfully' });
   }
 
