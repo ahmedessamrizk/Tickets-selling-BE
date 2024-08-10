@@ -8,9 +8,7 @@ import { DiscountTicketsModule } from './modules/discount-tickets/discount-ticke
 import { PaymentModule } from './modules/payment/payment.module';
 import * as path from 'path';
 import { APP_PIPE } from '@nestjs/core';
-import cookieParser from 'cookie-parser';
-import { AppController } from './app.controller';
-
+const cookieParser = require('cookie-parser');
 // import { CurrentUserMiddleware } from './common/middleware/current-user.middleware';
 
 @Module({
@@ -50,10 +48,9 @@ import { AppController } from './app.controller';
       }),
     },
   ],
-  controllers: [AppController],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(cookieParser).forRoutes('*'); // Apply middleware to all routes
+    consumer.apply(cookieParser()).forRoutes('*'); // Apply middleware to all routes
   }
 }
