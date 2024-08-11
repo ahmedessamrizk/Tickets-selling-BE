@@ -1,8 +1,6 @@
 import * as bcrypt from 'bcrypt';
-import { User } from '../users/schema/users.schema';
 import {
   ConflictException,
-  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -33,7 +31,7 @@ export class AuthService {
     });
 
     if (user) {
-      throw new ConflictException('user already exists');
+      throw new ConflictException('User already exists');
     }
 
     //encrypt nationalId
@@ -55,11 +53,11 @@ export class AuthService {
     //check if email and password are correct.
     const user = await this.usersService.findOne({ phoneNumber });
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      throw new UnauthorizedException('invalid credentials');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     if (user.isBlocked) {
-      throw new UnauthorizedException('this account is blocked');
+      throw new UnauthorizedException('This account is blocked');
     }
 
     //generate token

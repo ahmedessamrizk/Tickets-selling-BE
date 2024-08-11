@@ -44,12 +44,12 @@ export class UsersService {
   async blockUser(id: string, isBlocked: boolean): Promise<void> {
     const user = await this.getProfile(id);
     if (!user) {
-      throw new BadRequestException('user not found');
+      throw new BadRequestException('User not found');
     }
 
     //prevent blocking super admin
     if (user.role === Role.SuperAdmin) {
-      throw new BadRequestException('you cannot block a super admin');
+      throw new BadRequestException('You cannot block a super admin');
     }
 
     await this.userModel.findByIdAndUpdate(id, { isBlocked });
@@ -58,7 +58,7 @@ export class UsersService {
   async updateRole(id: string, role: Role): Promise<User> {
     const user = await this.getProfile(id);
     if (!user) {
-      throw new BadRequestException('user not found');
+      throw new BadRequestException('User not found');
     }
 
     if (user.role === Role.SuperAdmin || role === Role.SuperAdmin) {

@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { TicketsService } from './tickets.service';
 import { Ticket } from './schema/tickets.schema';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -8,6 +18,7 @@ import { CreateTicketDto } from './dtos/create-ticket.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../users/schema/users.schema';
 import { Public } from '../../common/decorators/public.decorator';
+import { UpdateTicketDto } from './dtos/update-ticket.dto';
 
 @Controller('/tickets')
 export class TicketsController {
@@ -36,11 +47,21 @@ export class TicketsController {
     return this.ticketsService.findAll(user);
   }
 
-  // @Patch()
-  // @Roles(Role.Admin, Role.SuperAdmin)
-  // @UseGuards(RolesGuard)
-  // updateTicket(@Body() updateTicketDto: Partial<CreateTicketDto>, @CurrentUser() user: User): Promise<Ticket> {
-  //   return this.ticketsService.update(updateTicketDto, user);
+  @Patch('/:id')
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(RolesGuard)
+  updateTicket(
+    @Param('id') id: string,
+    @Body() updateTicketDto: UpdateTicketDto,
+  ): Promise<Ticket> {
+    return this.ticketsService.update(id, updateTicketDto);
+  }
 
-  // }
+  @Delete('/:id')
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(RolesGuard)
+  @HttpCode(204)
+  deleteTicket(@Param('id') id: string): Promise<null> {
+    return this.ticketsService.delete(id);
+  }
 }

@@ -42,7 +42,7 @@ export class UsersController {
   }
 
   @Get()
-  @Roles(Role.SuperAdmin, Role.Admin)
+  @Roles(Role.SuperAdmin)
   @Serialize(GetUsersDto)
   getUsers(): Promise<User[]> {
     return this.usersService.findAll();
