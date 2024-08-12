@@ -4,10 +4,13 @@ import { Model } from 'mongoose';
 import { TicketsService } from '../tickets/tickets.service';
 import { Ticket } from '../tickets/schema/tickets.schema';
 import { UpdateDiscountTaskDto } from './dtos/update-discount-task.dto';
+import { GetDiscountTicketsDto } from './dtos/get-discount-tickets.dto';
+import { PaginationService } from '../../common/services/pagination.service';
 export declare class DiscountTicketsService {
     private readonly discountTicketModel;
     private readonly ticketsService;
-    constructor(discountTicketModel: Model<DiscountTicket>, ticketsService: TicketsService);
+    private readonly paginationService;
+    constructor(discountTicketModel: Model<DiscountTicket>, ticketsService: TicketsService, paginationService: PaginationService);
     populate: {
         path: string;
         select: string;
@@ -15,7 +18,11 @@ export declare class DiscountTicketsService {
     findOne(query: any): Promise<DiscountTicket>;
     create(createDiscountTicketDto: CreateDiscountTicketDto): Promise<DiscountTicket>;
     checkValidTicket(ticket: string): Promise<Ticket>;
-    findAll(): Promise<DiscountTicket[]>;
+    findAll(query: GetDiscountTicketsDto): Promise<{
+        total: number;
+        totalPages: number;
+        discountTickets: DiscountTicket[];
+    }>;
     findById(id: string): Promise<DiscountTicket>;
     update(id: string, updateDiscountTaskDto: UpdateDiscountTaskDto): Promise<DiscountTicket>;
     delete(id: string): Promise<null>;

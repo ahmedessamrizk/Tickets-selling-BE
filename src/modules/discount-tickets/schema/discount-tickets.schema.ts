@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
-import { Ticket } from 'src/modules/tickets/schema/tickets.schema';
-import { User } from 'src/modules/users/schema/users.schema';
+import { Ticket } from '../../../modules/tickets/schema/tickets.schema';
+import { User } from '../../../modules/users/schema/users.schema';
 
 export type DiscountTicketDocument = HydratedDocument<DiscountTicket>;
 

@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { TicketsService } from './tickets.service';
@@ -19,6 +20,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../users/schema/users.schema';
 import { Public } from '../../common/decorators/public.decorator';
 import { UpdateTicketDto } from './dtos/update-ticket.dto';
+import { GetTicketsDto } from './dtos/get-tickets.dto';
 
 @Controller('/tickets')
 export class TicketsController {
@@ -36,15 +38,20 @@ export class TicketsController {
 
   @Public()
   @Get()
-  async getTicketsForUsers(): Promise<Ticket[]> {
-    return this.ticketsService.findAll(null);
+  async getTicketsForUsers(
+    @Query() query: GetTicketsDto,
+  ): Promise<{ total: number; totalPages: number; tickets: Ticket[] }> {
+    return this.ticketsService.findAll(query, null);
   }
 
   @Get('/admin')
   @Roles(Role.Admin, Role.SuperAdmin)
   @UseGuards(RolesGuard)
-  async getTicketsForAdmins(@CurrentUser() user: User): Promise<Ticket[]> {
-    return this.ticketsService.findAll(user);
+  async getTicketsForAdmins(
+    @Query() query: GetTicketsDto,
+    @CurrentUser() user: User,
+  ): Promise<{ total: number; totalPages: number; tickets: Ticket[] }> {
+    return this.ticketsService.findAll(query, user);
   }
 
   @Patch('/:id')

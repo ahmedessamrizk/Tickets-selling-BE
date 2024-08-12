@@ -11,6 +11,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Role } from '../../common/enums/roles.enum';
 import { UpdateTicketDto } from './dtos/update-ticket.dto';
 import { DiscountTicket } from '../discount-tickets/schema/discount-tickets.schema';
+import { PaginationService } from '../../common/services/pagination.service';
+import { GetTicketsDto } from './dtos/get-tickets.dto';
 
 @Injectable()
 export class TicketsService {
@@ -18,6 +20,7 @@ export class TicketsService {
     @InjectModel(Ticket.name) private ticketModel: Model<Ticket>,
     @InjectModel(DiscountTicket.name)
     private readonly discountTicketModel: Model<DiscountTicket>,
+    private readonly paginationService: PaginationService,
   ) {}
 
   async create(createTicketDto: CreateTicketDto, user: User): Promise<Ticket> {
@@ -44,24 +47,38 @@ export class TicketsService {
     }
   }
 
-  async findAll(user: User): Promise<Ticket[]> {
+  async findAll(
+    query: GetTicketsDto,
+    user: User,
+  ): Promise<{ total: number; totalPages: number; tickets: Ticket[] }> {
     let expose = {};
     // Remove quantity for users or guests
     if (!user || user.role === Role.User) {
       expose = { quantity: 0, createdBy: 0 };
     }
 
-    const tickets = await this.ticketModel
-      .find()
-      .populate([
-        {
-          path: 'createdBy',
-          select: 'name',
-        },
-      ])
-      .select(expose);
+    const { page, size } = query;
 
-    return tickets;
+    const { limit, skip } = this.paginationService.paginate(+page, +size);
+
+    const [tickets, totalTickets] = await Promise.all([
+      this.ticketModel
+        .find()
+        .limit(limit)
+        .skip(skip)
+        .populate([
+          {
+            path: 'createdBy',
+            select: 'name',
+          },
+        ])
+        .select(expose),
+      this.ticketModel.find().countDocuments(),
+    ]);
+    // Calculate the number of pages available
+    const totalPages = Math.ceil(totalTickets / limit);
+
+    return { total: totalTickets, totalPages, tickets };
   }
 
   async update(id: string, updateTicketDto: UpdateTicketDto): Promise<Ticket> {

@@ -9,23 +9,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppController = void 0;
-const common_1 = require("@nestjs/common");
-const public_decorator_1 = require("./common/decorators/public.decorator");
-let AppController = class AppController {
-    sayHello() {
-        return 'Hello World!';
-    }
-};
-exports.AppController = AppController;
+exports.GetDiscountTicketsDto = void 0;
+const class_validator_1 = require("class-validator");
+class GetDiscountTicketsDto {
+}
+exports.GetDiscountTicketsDto = GetDiscountTicketsDto;
 __decorate([
-    (0, public_decorator_1.Public)(),
-    (0, common_1.Get)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
-], AppController.prototype, "sayHello", null);
-exports.AppController = AppController = __decorate([
-    (0, common_1.Controller)('/')
-], AppController);
-//# sourceMappingURL=app.controller.js.map
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], GetDiscountTicketsDto.prototype, "page", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], GetDiscountTicketsDto.prototype, "size", void 0);
+//# sourceMappingURL=get-discount-tickets.dto.js.map

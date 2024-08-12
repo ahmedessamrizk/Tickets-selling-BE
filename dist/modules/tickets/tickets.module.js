@@ -13,6 +13,7 @@ const tickets_service_1 = require("./tickets.service");
 const mongoose_1 = require("@nestjs/mongoose");
 const tickets_schema_1 = require("./schema/tickets.schema");
 const discount_tickets_schema_1 = require("../discount-tickets/schema/discount-tickets.schema");
+const common_module_1 = require("../../common/modules/common.module");
 let TicketsModule = class TicketsModule {
 };
 exports.TicketsModule = TicketsModule;
@@ -21,6 +22,7 @@ exports.TicketsModule = TicketsModule = __decorate([
         imports: [
             mongoose_1.MongooseModule.forFeature([{ name: tickets_schema_1.Ticket.name, schema: tickets_schema_1.TicketSchema }]),
             mongoose_1.MongooseModule.forFeature([{ name: discount_tickets_schema_1.DiscountTicket.name, schema: discount_tickets_schema_1.DiscountTicketSchema }]),
+            common_module_1.CommonModule
         ],
         controllers: [tickets_controller_1.TicketsController],
         providers: [tickets_service_1.TicketsService],

@@ -22,6 +22,7 @@ const discount_tickets_service_1 = require("./discount-tickets.service");
 const serialize_interceptor_1 = require("../../common/interceptors/serialize.interceptor");
 const discount_ticket_dto_1 = require("./dtos/discount-ticket.dto");
 const update_discount_task_dto_1 = require("./dtos/update-discount-task.dto");
+const get_discount_tickets_dto_1 = require("./dtos/get-discount-tickets.dto");
 let DiscountTicketsController = class DiscountTicketsController {
     constructor(discountTicketsService) {
         this.discountTicketsService = discountTicketsService;
@@ -29,8 +30,8 @@ let DiscountTicketsController = class DiscountTicketsController {
     createDiscountTicket(body) {
         return this.discountTicketsService.create(body);
     }
-    getDiscountTickets() {
-        return this.discountTicketsService.findAll();
+    getDiscountTickets(query) {
+        return this.discountTicketsService.findAll(query);
     }
     getDiscountTicket(id) {
         return this.discountTicketsService.findById(id);
@@ -55,8 +56,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, roles_decorator_1.Roles)(roles_enum_1.Role.Admin, roles_enum_1.Role.SuperAdmin),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [get_discount_tickets_dto_1.GetDiscountTicketsDto]),
     __metadata("design:returntype", Promise)
 ], DiscountTicketsController.prototype, "getDiscountTickets", null);
 __decorate([

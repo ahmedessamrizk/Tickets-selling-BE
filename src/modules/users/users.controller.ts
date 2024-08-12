@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Patch,
+  Query,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -17,8 +18,8 @@ import { Role } from '../../common/enums/roles.enum';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { UpdateUserDto } from './dtos/update-user.dto';
-import { GetUsersDto } from './dtos/find-users.dto';
 import { UpdateRoleDto } from './dtos/update-role.dto';
+import { GetUsersDto } from './dtos/get-users.dto';
 
 @UseGuards(RolesGuard)
 @Controller('/users')
@@ -43,9 +44,8 @@ export class UsersController {
 
   @Get()
   @Roles(Role.SuperAdmin)
-  @Serialize(GetUsersDto)
-  getUsers(): Promise<User[]> {
-    return this.usersService.findAll();
+  getUsers(@Query() query: GetUsersDto): Promise<any> {
+    return this.usersService.findAll(query);
   }
 
   @Patch('/profile')

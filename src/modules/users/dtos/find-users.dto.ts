@@ -1,8 +1,10 @@
 import { Expose, Transform } from 'class-transformer';
+import { IsOptional } from 'class-validator';
 
-export class GetUsersDto {
-  @Transform((value) => value.obj._id.toString(), { toClassOnly: true })
+export class UsersDto {
+  @Transform((value) => value?.obj?._id?.toString(), { toClassOnly: true })
   @Expose()
+  @IsOptional()
   _id: string;
 
   @Expose()

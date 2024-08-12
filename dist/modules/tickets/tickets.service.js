@@ -19,10 +19,12 @@ const mongoose_1 = require("mongoose");
 const mongoose_2 = require("@nestjs/mongoose");
 const roles_enum_1 = require("../../common/enums/roles.enum");
 const discount_tickets_schema_1 = require("../discount-tickets/schema/discount-tickets.schema");
+const pagination_service_1 = require("../../common/services/pagination.service");
 let TicketsService = class TicketsService {
-    constructor(ticketModel, discountTicketModel) {
+    constructor(ticketModel, discountTicketModel, paginationService) {
         this.ticketModel = ticketModel;
         this.discountTicketModel = discountTicketModel;
+        this.paginationService = paginationService;
     }
     async create(createTicketDto, user) {
         await this.checkValid(createTicketDto);
@@ -40,21 +42,29 @@ let TicketsService = class TicketsService {
             }
         }
     }
-    async findAll(user) {
+    async findAll(query, user) {
         let expose = {};
         if (!user || user.role === roles_enum_1.Role.User) {
             expose = { quantity: 0, createdBy: 0 };
         }
-        const tickets = await this.ticketModel
-            .find()
-            .populate([
-            {
-                path: 'createdBy',
-                select: 'name',
-            },
-        ])
-            .select(expose);
-        return tickets;
+        const { page, size } = query;
+        const { limit, skip } = this.paginationService.paginate(+page, +size);
+        const [tickets, totalTickets] = await Promise.all([
+            this.ticketModel
+                .find()
+                .limit(limit)
+                .skip(skip)
+                .populate([
+                {
+                    path: 'createdBy',
+                    select: 'name',
+                },
+            ])
+                .select(expose),
+            this.ticketModel.find().countDocuments(),
+        ]);
+        const totalPages = Math.ceil(totalTickets / limit);
+        return { total: totalTickets, totalPages, tickets };
     }
     async update(id, updateTicketDto) {
         if (updateTicketDto.name) {
@@ -86,6 +96,7 @@ exports.TicketsService = TicketsService = __decorate([
     __param(0, (0, mongoose_2.InjectModel)(tickets_schema_1.Ticket.name)),
     __param(1, (0, mongoose_2.InjectModel)(discount_tickets_schema_1.DiscountTicket.name)),
     __metadata("design:paramtypes", [mongoose_1.Model,
-        mongoose_1.Model])
+        mongoose_1.Model,
+        pagination_service_1.PaginationService])
 ], TicketsService);
 //# sourceMappingURL=tickets.service.js.map

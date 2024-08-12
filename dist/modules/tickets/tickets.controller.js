@@ -23,6 +23,7 @@ const current_user_decorator_1 = require("../../common/decorators/current-user.d
 const users_schema_1 = require("../users/schema/users.schema");
 const public_decorator_1 = require("../../common/decorators/public.decorator");
 const update_ticket_dto_1 = require("./dtos/update-ticket.dto");
+const get_tickets_dto_1 = require("./dtos/get-tickets.dto");
 let TicketsController = class TicketsController {
     constructor(ticketsService) {
         this.ticketsService = ticketsService;
@@ -30,11 +31,11 @@ let TicketsController = class TicketsController {
     async createTicket(createTicketDto, user) {
         return this.ticketsService.create(createTicketDto, user);
     }
-    async getTicketsForUsers() {
-        return this.ticketsService.findAll(null);
+    async getTicketsForUsers(query) {
+        return this.ticketsService.findAll(query, null);
     }
-    async getTicketsForAdmins(user) {
-        return this.ticketsService.findAll(user);
+    async getTicketsForAdmins(query, user) {
+        return this.ticketsService.findAll(query, user);
     }
     updateTicket(id, updateTicketDto) {
         return this.ticketsService.update(id, updateTicketDto);
@@ -58,17 +59,20 @@ __decorate([
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [get_tickets_dto_1.GetTicketsDto]),
     __metadata("design:returntype", Promise)
 ], TicketsController.prototype, "getTicketsForUsers", null);
 __decorate([
     (0, common_1.Get)('/admin'),
     (0, roles_decorator_1.Roles)(roles_enum_1.Role.Admin, roles_enum_1.Role.SuperAdmin),
     (0, common_1.UseGuards)(roles_guard_1.RolesGuard),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(0, (0, common_1.Query)()),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [users_schema_1.User]),
+    __metadata("design:paramtypes", [get_tickets_dto_1.GetTicketsDto,
+        users_schema_1.User]),
     __metadata("design:returntype", Promise)
 ], TicketsController.prototype, "getTicketsForAdmins", null);
 __decorate([

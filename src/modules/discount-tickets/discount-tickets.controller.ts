@@ -7,17 +7,19 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { DiscountTicket } from './schema/discount-tickets.schema';
 import { CreateDiscountTicketDto } from './dtos/create-discount-tickets.dto';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Role } from 'src/common/enums/roles.enum';
-import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { Role } from '../../common/enums/roles.enum';
+import { RolesGuard } from '../../common/guards/roles.guard';
 import { DiscountTicketsService } from './discount-tickets.service';
-import { Serialize } from 'src/common/interceptors/serialize.interceptor';
+import { Serialize } from '../../common/interceptors/serialize.interceptor';
 import { DiscountTicketDto } from './dtos/discount-ticket.dto';
 import { UpdateDiscountTaskDto } from './dtos/update-discount-task.dto';
+import { GetDiscountTicketsDto } from './dtos/get-discount-tickets.dto';
 
 @Controller('/discount-tickets')
 @UseGuards(RolesGuard)
@@ -37,8 +39,12 @@ export class DiscountTicketsController {
 
   @Get()
   @Roles(Role.Admin, Role.SuperAdmin)
-  getDiscountTickets(): Promise<DiscountTicket[]> {
-    return this.discountTicketsService.findAll();
+  getDiscountTickets(@Query() query: GetDiscountTicketsDto): Promise<{
+    total: number;
+    totalPages: number;
+    discountTickets: DiscountTicket[];
+  }> {
+    return this.discountTicketsService.findAll(query);
   }
 
   @Get('/:id')

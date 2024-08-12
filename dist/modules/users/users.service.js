@@ -18,9 +18,11 @@ const mongoose_1 = require("@nestjs/mongoose");
 const users_schema_1 = require("./schema/users.schema");
 const mongoose_2 = require("mongoose");
 const roles_enum_1 = require("../../common/enums/roles.enum");
+const pagination_service_1 = require("../../common/services/pagination.service");
 let UsersService = class UsersService {
-    constructor(userModel) {
+    constructor(userModel, paginationService) {
         this.userModel = userModel;
+        this.paginationService = paginationService;
     }
     async create(user) {
         await this.userModel.create(user);
@@ -31,8 +33,19 @@ let UsersService = class UsersService {
     async getProfile(id) {
         return this.userModel.findById(id);
     }
-    async findAll() {
-        return this.userModel.find();
+    async findAll(query) {
+        const { page, size, role } = query;
+        const { limit, skip } = this.paginationService.paginate(+page, +size);
+        const [users, totalUsers] = await Promise.all([
+            this.userModel
+                .find(role ? { role } : {})
+                .limit(limit)
+                .skip(skip)
+                .select('-password -__v'),
+            this.userModel.find(role ? { role } : {}).countDocuments(),
+        ]);
+        const totalPages = Math.ceil(totalUsers / limit);
+        return { total: totalUsers, totalPages, users };
     }
     async updateProfile(userId, updateUserDto) {
         const user = await this.findOne({ phoneNumber: updateUserDto.phoneNumber });
@@ -68,6 +81,7 @@ exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(users_schema_1.User.name)),
-    __metadata("design:paramtypes", [mongoose_2.Model])
+    __metadata("design:paramtypes", [mongoose_2.Model,
+        pagination_service_1.PaginationService])
 ], UsersService);
 //# sourceMappingURL=users.service.js.map

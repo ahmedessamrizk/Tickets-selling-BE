@@ -4,10 +4,15 @@ import { User } from './schema/users.schema';
 import { Model } from 'mongoose';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { Role } from '../../common/enums/roles.enum';
+import { PaginationService } from '../../common/services/pagination.service';
+import { GetUsersDto } from './dtos/get-users.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private readonly paginationService: PaginationService,
+  ) {}
 
   async create(user: Partial<User>): Promise<void> {
     await this.userModel.create(user);
@@ -21,8 +26,23 @@ export class UsersService {
     return this.userModel.findById(id);
   }
 
-  async findAll(): Promise<User[]> {
-    return this.userModel.find();
+  async findAll(query: GetUsersDto): Promise<{ total: number; totalPages: number; users: User[] }> {
+    const { page, size, role } = query;
+
+    const { limit, skip } = this.paginationService.paginate(+page, +size);
+
+    const [users, totalUsers] = await Promise.all([
+      this.userModel
+        .find(role ? { role } : {})
+        .limit(limit)
+        .skip(skip)
+        .select('-password -__v'),
+      this.userModel.find(role ? { role } : {}).countDocuments(),
+    ]);
+    // Calculate the number of pages available
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    return { total: totalUsers, totalPages, users };
   }
 
   async updateProfile(

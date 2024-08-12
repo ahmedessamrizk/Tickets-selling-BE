@@ -9,36 +9,24 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UsersDto = void 0;
-const class_transformer_1 = require("class-transformer");
+exports.GetUsersDto = void 0;
 const class_validator_1 = require("class-validator");
-class UsersDto {
+class GetUsersDto {
 }
-exports.UsersDto = UsersDto;
+exports.GetUsersDto = GetUsersDto;
 __decorate([
-    (0, class_transformer_1.Transform)((value) => value?.obj?._id?.toString(), { toClassOnly: true }),
-    (0, class_transformer_1.Expose)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], GetUsersDto.prototype, "page", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], GetUsersDto.prototype, "size", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], UsersDto.prototype, "_id", void 0);
-__decorate([
-    (0, class_transformer_1.Expose)(),
-    __metadata("design:type", String)
-], UsersDto.prototype, "name", void 0);
-__decorate([
-    (0, class_transformer_1.Expose)(),
-    __metadata("design:type", String)
-], UsersDto.prototype, "nationalId", void 0);
-__decorate([
-    (0, class_transformer_1.Expose)(),
-    __metadata("design:type", String)
-], UsersDto.prototype, "phoneNumber", void 0);
-__decorate([
-    (0, class_transformer_1.Expose)(),
-    __metadata("design:type", String)
-], UsersDto.prototype, "role", void 0);
-__decorate([
-    (0, class_transformer_1.Expose)(),
-    __metadata("design:type", Boolean)
-], UsersDto.prototype, "isBlocked", void 0);
-//# sourceMappingURL=find-users.dto.js.map
+], GetUsersDto.prototype, "role", void 0);
+//# sourceMappingURL=get-users.dto.js.map

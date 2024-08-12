@@ -11,6 +11,8 @@ import { Model } from 'mongoose';
 import { TicketsService } from '../tickets/tickets.service';
 import { Ticket } from '../tickets/schema/tickets.schema';
 import { UpdateDiscountTaskDto } from './dtos/update-discount-task.dto';
+import { GetDiscountTicketsDto } from './dtos/get-discount-tickets.dto';
+import { PaginationService } from '../../common/services/pagination.service';
 
 @Injectable()
 export class DiscountTicketsService {
@@ -18,6 +20,7 @@ export class DiscountTicketsService {
     @InjectModel(DiscountTicket.name)
     private readonly discountTicketModel: Model<DiscountTicket>,
     private readonly ticketsService: TicketsService,
+    private readonly paginationService: PaginationService,
   ) {}
 
   populate = [
@@ -77,8 +80,27 @@ export class DiscountTicketsService {
     return checkTicket;
   }
 
-  async findAll(): Promise<DiscountTicket[]> {
-    return this.discountTicketModel.find().populate(this.populate);
+  async findAll(query: GetDiscountTicketsDto): Promise<{
+    total: number;
+    totalPages: number;
+    discountTickets: DiscountTicket[];
+  }> {
+    const { page, size } = query;
+
+    const { limit, skip } = this.paginationService.paginate(+page, +size);
+
+    const [discountTickets, totalDiscountTickets] = await Promise.all([
+      this.discountTicketModel
+        .find()
+        .limit(limit)
+        .skip(skip)
+        .populate(this.populate),
+      this.discountTicketModel.find().countDocuments(),
+    ]);
+    // Calculate the number of pages available
+    const totalPages = Math.ceil(totalDiscountTickets / limit);
+
+    return { total: totalDiscountTickets, totalPages, discountTickets };
   }
 
   async findById(id: string): Promise<DiscountTicket> {
@@ -110,7 +132,8 @@ export class DiscountTicketsService {
   }
 
   async delete(id: string): Promise<null> {
-    const deleteDiscountTicket = await this.discountTicketModel.findByIdAndDelete(id);
+    const deleteDiscountTicket =
+      await this.discountTicketModel.findByIdAndDelete(id);
     if (!deleteDiscountTicket) {
       throw new NotFoundException('Discount ticket not found');
     }

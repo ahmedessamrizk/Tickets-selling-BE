@@ -7,13 +7,15 @@ import {
   DiscountTicketSchema,
 } from './schema/discount-tickets.schema';
 import { TicketsModule } from '../tickets/tickets.module';
+import { CommonModule } from '../../common/modules/common.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: DiscountTicket.name, schema: DiscountTicketSchema },
     ]),
-    TicketsModule
+    TicketsModule,
+    CommonModule
   ],
   controllers: [DiscountTicketsController],
   providers: [DiscountTicketsService],

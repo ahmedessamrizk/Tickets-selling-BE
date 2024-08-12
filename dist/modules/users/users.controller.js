@@ -23,8 +23,8 @@ const roles_enum_1 = require("../../common/enums/roles.enum");
 const roles_decorator_1 = require("../../common/decorators/roles.decorator");
 const roles_guard_1 = require("../../common/guards/roles.guard");
 const update_user_dto_1 = require("./dtos/update-user.dto");
-const find_users_dto_1 = require("./dtos/find-users.dto");
 const update_role_dto_1 = require("./dtos/update-role.dto");
+const get_users_dto_1 = require("./dtos/get-users.dto");
 let UsersController = class UsersController {
     constructor(usersService) {
         this.usersService = usersService;
@@ -40,8 +40,8 @@ let UsersController = class UsersController {
         });
         return res.json({ message: 'Logged out successfully' });
     }
-    getUsers() {
-        return this.usersService.findAll();
+    getUsers(query) {
+        return this.usersService.findAll(query);
     }
     updateProfile(user, updateUserDto) {
         return this.usersService.updateProfile(user._id, updateUserDto);
@@ -75,9 +75,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, roles_decorator_1.Roles)(roles_enum_1.Role.SuperAdmin),
-    (0, serialize_interceptor_1.Serialize)(find_users_dto_1.GetUsersDto),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [get_users_dto_1.GetUsersDto]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "getUsers", null);
 __decorate([
@@ -109,7 +109,7 @@ __decorate([
 __decorate([
     (0, common_1.Patch)('/:id/role'),
     (0, roles_decorator_1.Roles)(roles_enum_1.Role.SuperAdmin),
-    (0, serialize_interceptor_1.Serialize)(find_users_dto_1.GetUsersDto),
+    (0, serialize_interceptor_1.Serialize)(get_users_dto_1.GetUsersDto),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

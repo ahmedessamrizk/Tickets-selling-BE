@@ -12,6 +12,7 @@ const encryption_service_1 = require("../services/encryption.service");
 const core_1 = require("@nestjs/core");
 const jwt_auth_guard_1 = require("../guards/jwt-auth.guard");
 const response_interceptor_1 = require("../interceptors/response.interceptor");
+const pagination_service_1 = require("../services/pagination.service");
 let CommonModule = class CommonModule {
 };
 exports.CommonModule = CommonModule;
@@ -27,8 +28,9 @@ exports.CommonModule = CommonModule = __decorate([
                 provide: core_1.APP_INTERCEPTOR,
                 useClass: response_interceptor_1.ResponseInterceptor,
             },
+            pagination_service_1.PaginationService,
         ],
-        exports: [encryption_service_1.EncryptionService],
+        exports: [encryption_service_1.EncryptionService, pagination_service_1.PaginationService],
     })
 ], CommonModule);
 //# sourceMappingURL=common.module.js.map

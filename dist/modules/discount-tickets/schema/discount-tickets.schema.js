@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DiscountTicketSchema = exports.DiscountTicket = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
-const tickets_schema_1 = require("../../tickets/schema/tickets.schema");
+const tickets_schema_1 = require("../../../modules/tickets/schema/tickets.schema");
 let DiscountTicket = class DiscountTicket {
 };
 exports.DiscountTicket = DiscountTicket;

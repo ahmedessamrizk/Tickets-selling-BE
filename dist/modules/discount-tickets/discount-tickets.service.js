@@ -19,10 +19,12 @@ const discount_tickets_schema_1 = require("./schema/discount-tickets.schema");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const tickets_service_1 = require("../tickets/tickets.service");
+const pagination_service_1 = require("../../common/services/pagination.service");
 let DiscountTicketsService = class DiscountTicketsService {
-    constructor(discountTicketModel, ticketsService) {
+    constructor(discountTicketModel, ticketsService, paginationService) {
         this.discountTicketModel = discountTicketModel;
         this.ticketsService = ticketsService;
+        this.paginationService = paginationService;
         this.populate = [
             {
                 path: 'ticket',
@@ -60,8 +62,19 @@ let DiscountTicketsService = class DiscountTicketsService {
         }
         return checkTicket;
     }
-    async findAll() {
-        return this.discountTicketModel.find().populate(this.populate);
+    async findAll(query) {
+        const { page, size } = query;
+        const { limit, skip } = this.paginationService.paginate(+page, +size);
+        const [discountTickets, totalDiscountTickets] = await Promise.all([
+            this.discountTicketModel
+                .find()
+                .limit(limit)
+                .skip(skip)
+                .populate(this.populate),
+            this.discountTicketModel.find().countDocuments(),
+        ]);
+        const totalPages = Math.ceil(totalDiscountTickets / limit);
+        return { total: totalDiscountTickets, totalPages, discountTickets };
     }
     async findById(id) {
         return this.discountTicketModel.findById(id).populate(this.populate);
@@ -97,6 +110,7 @@ exports.DiscountTicketsService = DiscountTicketsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(discount_tickets_schema_1.DiscountTicket.name)),
     __metadata("design:paramtypes", [mongoose_2.Model,
-        tickets_service_1.TicketsService])
+        tickets_service_1.TicketsService,
+        pagination_service_1.PaginationService])
 ], DiscountTicketsService);
 //# sourceMappingURL=discount-tickets.service.js.map
