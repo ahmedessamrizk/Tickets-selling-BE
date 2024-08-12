@@ -25,6 +25,12 @@ __decorate([
     __metadata("design:type", String)
 ], Ticket.prototype, "desc", void 0);
 __decorate([
+    (0, mongoose_1.Prop)({
+        required: true,
+    }),
+    __metadata("design:type", String)
+], Ticket.prototype, "ImageURL", void 0);
+__decorate([
     (0, mongoose_1.Prop)({ required: true, min: 5 }),
     __metadata("design:type", Number)
 ], Ticket.prototype, "price", void 0);

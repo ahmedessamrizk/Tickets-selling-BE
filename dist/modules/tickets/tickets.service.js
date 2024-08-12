@@ -18,17 +18,19 @@ const tickets_schema_1 = require("./schema/tickets.schema");
 const mongoose_1 = require("mongoose");
 const mongoose_2 = require("@nestjs/mongoose");
 const roles_enum_1 = require("../../common/enums/roles.enum");
+const discount_tickets_schema_1 = require("../discount-tickets/schema/discount-tickets.schema");
 let TicketsService = class TicketsService {
-    constructor(ticketModel) {
+    constructor(ticketModel, discountTicketModel) {
         this.ticketModel = ticketModel;
+        this.discountTicketModel = discountTicketModel;
     }
     async create(createTicketDto, user) {
         await this.checkValid(createTicketDto);
         Object.assign(createTicketDto, { createdBy: user._id });
         return this.ticketModel.create(createTicketDto);
     }
-    findOne(query) {
-        return this.ticketModel.findOne(query);
+    findOne(query, select = '') {
+        return this.ticketModel.findOne(query).select(select);
     }
     async checkValid(createTicketDto, id = '') {
         const ticket = await this.findOne({ name: createTicketDto.name });
@@ -65,6 +67,12 @@ let TicketsService = class TicketsService {
         return updatedTicket;
     }
     async delete(id) {
+        const discountTicket = await this.discountTicketModel.findOne({
+            ticket: id,
+        });
+        if (discountTicket) {
+            throw new common_1.BadRequestException('Ticket has discount ticket');
+        }
         const ticket = await this.ticketModel.findByIdAndDelete(id);
         if (!ticket) {
             throw new common_1.ConflictException('Ticket not found');
@@ -76,6 +84,8 @@ exports.TicketsService = TicketsService;
 exports.TicketsService = TicketsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_2.InjectModel)(tickets_schema_1.Ticket.name)),
-    __metadata("design:paramtypes", [mongoose_1.Model])
+    __param(1, (0, mongoose_2.InjectModel)(discount_tickets_schema_1.DiscountTicket.name)),
+    __metadata("design:paramtypes", [mongoose_1.Model,
+        mongoose_1.Model])
 ], TicketsService);
 //# sourceMappingURL=tickets.service.js.map

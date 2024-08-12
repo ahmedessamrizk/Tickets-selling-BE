@@ -9,36 +9,34 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateTicketDto = void 0;
-const class_validator_1 = require("class-validator");
-class CreateTicketDto {
+exports.DiscountTicketDto = void 0;
+const class_transformer_1 = require("class-transformer");
+class DiscountTicketDto {
 }
-exports.CreateTicketDto = CreateTicketDto;
+exports.DiscountTicketDto = DiscountTicketDto;
 __decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MinLength)(2),
+    (0, class_transformer_1.Transform)((value) => value.obj._id.toString(), { toClassOnly: true }),
+    (0, class_transformer_1.Expose)(),
     __metadata("design:type", String)
-], CreateTicketDto.prototype, "name", void 0);
+], DiscountTicketDto.prototype, "_id", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
     __metadata("design:type", String)
-], CreateTicketDto.prototype, "desc", void 0);
+], DiscountTicketDto.prototype, "name", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
+    (0, class_transformer_1.Expose)(),
     __metadata("design:type", String)
-], CreateTicketDto.prototype, "ImageURL", void 0);
+], DiscountTicketDto.prototype, "desc", void 0);
 __decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.Min)(5),
+    (0, class_transformer_1.Expose)(),
     __metadata("design:type", Number)
-], CreateTicketDto.prototype, "price", void 0);
+], DiscountTicketDto.prototype, "limit", void 0);
 __decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.Min)(1),
-    __metadata("design:type", Number)
-], CreateTicketDto.prototype, "quantity", void 0);
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], DiscountTicketDto.prototype, "expiry", void 0);
 __decorate([
-    (0, class_validator_1.IsDateString)(),
-    __metadata("design:type", Date)
-], CreateTicketDto.prototype, "expiry", void 0);
-//# sourceMappingURL=create-ticket.dto.js.map
+    (0, class_transformer_1.Expose)(),
+    __metadata("design:type", String)
+], DiscountTicketDto.prototype, "ticket", void 0);
+//# sourceMappingURL=discount-ticket.dto.js.map

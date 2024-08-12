@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { Ticket } from './schema/tickets.schema';
 import { User } from '../users/schema/users.schema';
 import { CreateTicketDto } from './dtos/create-ticket.dto';
@@ -6,10 +10,15 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Role } from '../../common/enums/roles.enum';
 import { UpdateTicketDto } from './dtos/update-ticket.dto';
+import { DiscountTicket } from '../discount-tickets/schema/discount-tickets.schema';
 
 @Injectable()
 export class TicketsService {
-  constructor(@InjectModel(Ticket.name) private ticketModel: Model<Ticket>) {}
+  constructor(
+    @InjectModel(Ticket.name) private ticketModel: Model<Ticket>,
+    @InjectModel(DiscountTicket.name)
+    private readonly discountTicketModel: Model<DiscountTicket>,
+  ) {}
 
   async create(createTicketDto: CreateTicketDto, user: User): Promise<Ticket> {
     // Check if ticket already exists with this name
@@ -19,8 +28,8 @@ export class TicketsService {
     return this.ticketModel.create(createTicketDto);
   }
 
-  findOne(query: Partial<Ticket>): Promise<Ticket> {
-    return this.ticketModel.findOne(query);
+  findOne(query: Partial<CreateTicketDto>, select = ''): Promise<Ticket> {
+    return this.ticketModel.findOne(query).select(select);
   }
 
   async checkValid(
@@ -55,10 +64,7 @@ export class TicketsService {
     return tickets;
   }
 
-  async update(
-    id: string,
-    updateTicketDto: UpdateTicketDto,
-  ): Promise<Ticket> {
+  async update(id: string, updateTicketDto: UpdateTicketDto): Promise<Ticket> {
     if (updateTicketDto.name) {
       await this.checkValid(updateTicketDto, id);
     }
@@ -76,7 +82,13 @@ export class TicketsService {
   }
 
   async delete(id: string): Promise<null> {
-    //TODO: check discount-ticket for this ticket
+    //check discount-ticket for this ticket
+    const discountTicket = await this.discountTicketModel.findOne({
+      ticket: id,
+    });
+    if (discountTicket) {
+      throw new BadRequestException('Ticket has discount ticket');
+    }
     const ticket = await this.ticketModel.findByIdAndDelete(id);
     if (!ticket) {
       throw new ConflictException('Ticket not found');

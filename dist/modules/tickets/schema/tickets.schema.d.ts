@@ -4,6 +4,7 @@ export type TicketDocument = HydratedDocument<Ticket>;
 export declare class Ticket {
     name: string;
     desc: string;
+    ImageURL: string;
     price: number;
     quantity: number;
     expiry: Date;

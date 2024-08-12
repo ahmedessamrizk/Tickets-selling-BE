@@ -1,5 +1,6 @@
 import {
   IsDateString,
+  IsNotEmpty,
   IsNumber,
   IsString,
   Min,
@@ -7,12 +8,17 @@ import {
 } from 'class-validator';
 
 export class CreateTicketDto {
+  _id?: string;
+
   @IsString()
   @MinLength(2)
   name: string;
 
   @IsString()
   desc: string;
+
+  @IsString()
+  ImageURL: string;
 
   @IsNumber()
   @Min(5)

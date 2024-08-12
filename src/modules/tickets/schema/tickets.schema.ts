@@ -12,6 +12,11 @@ export class Ticket {
   @Prop({ required: true })
   desc: string;
 
+  @Prop({
+    required: true,
+  })
+  ImageURL: string;
+
   @Prop({ required: true, min: 5 })
   price: number;
 

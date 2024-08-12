@@ -9,36 +9,32 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateTicketDto = void 0;
+exports.CreateDiscountTicketDto = void 0;
 const class_validator_1 = require("class-validator");
-class CreateTicketDto {
+class CreateDiscountTicketDto {
 }
-exports.CreateTicketDto = CreateTicketDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MinLength)(2),
-    __metadata("design:type", String)
-], CreateTicketDto.prototype, "name", void 0);
+exports.CreateDiscountTicketDto = CreateDiscountTicketDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], CreateTicketDto.prototype, "desc", void 0);
+], CreateDiscountTicketDto.prototype, "name", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], CreateTicketDto.prototype, "ImageURL", void 0);
-__decorate([
-    (0, class_validator_1.IsNumber)(),
-    (0, class_validator_1.Min)(5),
-    __metadata("design:type", Number)
-], CreateTicketDto.prototype, "price", void 0);
+], CreateDiscountTicketDto.prototype, "desc", void 0);
 __decorate([
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.Min)(1),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Number)
-], CreateTicketDto.prototype, "quantity", void 0);
+], CreateDiscountTicketDto.prototype, "limit", void 0);
 __decorate([
     (0, class_validator_1.IsDateString)(),
-    __metadata("design:type", Date)
-], CreateTicketDto.prototype, "expiry", void 0);
-//# sourceMappingURL=create-ticket.dto.js.map
+    __metadata("design:type", String)
+], CreateDiscountTicketDto.prototype, "expiry", void 0);
+__decorate([
+    (0, class_validator_1.IsMongoId)(),
+    __metadata("design:type", String)
+], CreateDiscountTicketDto.prototype, "ticket", void 0);
+//# sourceMappingURL=create-discount-tickets.dto.js.map
