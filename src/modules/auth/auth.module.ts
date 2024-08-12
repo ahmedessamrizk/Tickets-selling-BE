@@ -20,7 +20,7 @@ import { JwtStrategy } from './jwt.strategy';
         // Use secret key from config
         secret: configService.get<string>('TOKEN_KEY'),
         signOptions: { expiresIn: '1h' },
-        sameSite: 'Strict',
+        sameSite: 'none',
       }),
     }),
     UsersModule,

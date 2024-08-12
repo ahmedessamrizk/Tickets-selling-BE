@@ -31,7 +31,7 @@ exports.AuthModule = AuthModule = __decorate([
                 useFactory: async (configService) => ({
                     secret: configService.get('TOKEN_KEY'),
                     signOptions: { expiresIn: '1h' },
-                    sameSite: 'Strict',
+                    sameSite: 'none',
                 }),
             }),
             users_module_1.UsersModule,
