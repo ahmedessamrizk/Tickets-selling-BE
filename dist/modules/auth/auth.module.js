@@ -32,6 +32,8 @@ exports.AuthModule = AuthModule = __decorate([
                     secret: configService.get('TOKEN_KEY'),
                     signOptions: { expiresIn: '1h' },
                     sameSite: 'none',
+                    secure: true,
+                    httpOnly: true,
                 }),
             }),
             users_module_1.UsersModule,

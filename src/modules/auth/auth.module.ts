@@ -21,6 +21,8 @@ import { JwtStrategy } from './jwt.strategy';
         secret: configService.get<string>('TOKEN_KEY'),
         signOptions: { expiresIn: '1h' },
         sameSite: 'none',
+        secure: true,
+        httpOnly: true,
       }),
     }),
     UsersModule,
