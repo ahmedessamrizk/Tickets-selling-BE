@@ -8,6 +8,7 @@ import {
 } from './schema/discount-tickets.schema';
 import { TicketsModule } from '../tickets/tickets.module';
 import { CommonModule } from '../../common/modules/common.module';
+import { PaymentModule } from '../payment/payment.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { CommonModule } from '../../common/modules/common.module';
       { name: DiscountTicket.name, schema: DiscountTicketSchema },
     ]),
     TicketsModule,
-    CommonModule
+    CommonModule,
+    PaymentModule,
   ],
   controllers: [DiscountTicketsController],
   providers: [DiscountTicketsService],

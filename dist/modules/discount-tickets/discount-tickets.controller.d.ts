@@ -12,7 +12,9 @@ export declare class DiscountTicketsController {
         totalPages: number;
         discountTickets: DiscountTicket[];
     }>;
+    getDiscountTicketsWinners(id: string): Promise<DiscountTicket[]>;
     getDiscountTicket(id: string): Promise<DiscountTicket>;
     updateDiscountTicket(body: UpdateDiscountTaskDto, id: string): Promise<DiscountTicket>;
     deleteDiscountTicket(id: string): Promise<null>;
+    addWinner(id: string, userId: string): Promise<DiscountTicket>;
 }

@@ -127,6 +127,54 @@ let PaymentService = class PaymentService {
         payment.status = payment_enum_1.PaymentStatus.Fail;
         return payment.save();
     }
+    async getUsersForDiscountTicket(ticketId, winners) {
+        ticketId = ticketId.toString();
+        const users = await this.paymentModel
+            .aggregate([
+            {
+                $addFields: {
+                    user: { $toObjectId: '$user' },
+                },
+            },
+            {
+                $match: {
+                    ticket: ticketId,
+                    status: payment_enum_1.PaymentStatus.Success,
+                    user: { $nin: winners },
+                },
+            },
+            {
+                $group: {
+                    _id: '$user',
+                    quantity: { $sum: '$quantity' },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'userDetails',
+                },
+            },
+            {
+                $unwind: { path: '$userDetails', preserveNullAndEmptyArrays: true },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    userDetails: {
+                        _id: 1,
+                        name: 1,
+                        phoneNumber: 1,
+                    },
+                    quantity: 1,
+                },
+            },
+        ])
+            .exec();
+        return users;
+    }
     async handleExpiredOrOutOfStockPayments() {
         const now = new Date();
         const payments = await this.paymentModel
@@ -144,15 +192,22 @@ let PaymentService = class PaymentService {
         await Promise.all(updates);
     }
     async getUserBuysTicket(order) {
-        const result = await this.paymentModel.aggregate([
+        const result = await this.paymentModel
+            .aggregate([
+            {
+                $addFields: {
+                    user: { $toObjectId: '$user' },
+                },
+            },
             { $match: { status: payment_enum_1.PaymentStatus.Success } },
             {
                 $group: {
                     _id: '$user',
-                    totalTickets: { $sum: '$quantity' },
+                    totalBought: { $sum: '$quantity' },
                 },
             },
-            { $sort: { totalTickets: order } },
+            { $sort: { totalBought: -1 } },
+            { $limit: 1 },
             {
                 $lookup: {
                     from: 'users',
@@ -161,22 +216,29 @@ let PaymentService = class PaymentService {
                     as: 'userDetails',
                 },
             },
+            { $unwind: { path: '$userDetails', preserveNullAndEmptyArrays: true } },
             {
                 $project: {
-                    _id: 1,
-                    totalTickets: 1,
+                    _id: 0,
+                    userDetails: {
+                        _id: 1,
+                        name: 1,
+                        phoneNumber: 1,
+                    },
+                    totalBought: 1,
                 },
             },
-            { $limit: 1 },
-        ]);
+        ])
+            .exec();
         return result;
     }
-    async getTicketBought(order) {
+    async getTicketBought(order, limit = 1, select = { _id: 1, name: 1 }) {
         return this.paymentModel.aggregate([
+            { $addFields: { ticket: { $toObjectId: '$ticket' } } },
             { $match: { status: payment_enum_1.PaymentStatus.Success } },
-            { $group: { _id: '$ticket', totalTickets: { $sum: '$quantity' } } },
-            { $sort: { totalTickets: order } },
-            { $limit: 1 },
+            { $group: { _id: '$ticket', totalSold: { $sum: '$quantity' } } },
+            { $sort: { totalSold: order } },
+            { $limit: limit },
             {
                 $lookup: {
                     from: 'tickets',
@@ -185,7 +247,8 @@ let PaymentService = class PaymentService {
                     as: 'ticket',
                 },
             },
-            { $project: { _id: 1, totalTickets: 1 } },
+            { $unwind: { path: '$ticket', preserveNullAndEmptyArrays: true } },
+            { $project: { _id: 0, totalSold: 1, ticket: select } },
         ]);
     }
     async getAnalytics() {
@@ -195,9 +258,9 @@ let PaymentService = class PaymentService {
             this.getTicketBought(1),
         ]);
         return {
-            mostActiveUser,
-            mostTicketBought,
-            leastTicketBought,
+            mostActiveUser: mostActiveUser[0],
+            mostTicketBought: mostTicketBought[0],
+            leastTicketBought: leastTicketBought[0],
         };
     }
 };

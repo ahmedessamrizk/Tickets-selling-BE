@@ -21,8 +21,9 @@ export declare class PaymentService {
     rejectPayment(transactionId: string, user: User): Promise<mongoose.Document<unknown, {}, Payment> & Payment & {
         _id: mongoose.Types.ObjectId;
     }>;
+    getUsersForDiscountTicket(ticketId: string, winners: any): Promise<any>;
     handleExpiredOrOutOfStockPayments(): Promise<void>;
     getUserBuysTicket(order: 1 | -1): Promise<any>;
-    getTicketBought(order: 1 | -1): Promise<any>;
+    getTicketBought(order: 1 | -1, limit?: number, select?: {}): Promise<any>;
     getAnalytics(): Promise<any>;
 }

@@ -164,6 +164,59 @@ export class PaymentService {
     return payment.save();
   }
 
+  async getUsersForDiscountTicket(
+    ticketId: string,
+    winners: any,
+  ): Promise<any> {
+    ticketId = ticketId.toString();
+    const users = await this.paymentModel
+      .aggregate([
+        {
+          $addFields: {
+            user: { $toObjectId: '$user' },
+          },
+        },
+        {
+          $match: {
+            ticket: ticketId,
+            status: PaymentStatus.Success,
+            user: { $nin: winners }, // Ensure user is not empty
+          },
+        },
+        {
+          $group: {
+            _id: '$user',
+            quantity: { $sum: '$quantity' },
+          },
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'userDetails',
+          },
+        },
+        {
+          $unwind: { path: '$userDetails', preserveNullAndEmptyArrays: true }, // Try without unwind first to see if results are coming in array form
+        },
+        {
+          $project: {
+            _id: 0,
+            userDetails: {
+              _id: 1,
+              name: 1,
+              phoneNumber: 1,
+            },
+            quantity: 1,
+          },
+        },
+      ])
+      .exec();
+
+    return users;
+  }
+
   // Runs every day to reject payments that are expired or out of stock
   @Cron('0 0 * * * ')
   async handleExpiredOrOutOfStockPayments() {
@@ -190,58 +243,55 @@ export class PaymentService {
 
   //Analytics
   async getUserBuysTicket(order: 1 | -1): Promise<any> {
-    const result = await this.paymentModel.aggregate([
-      { $match: { status: PaymentStatus.Success } }, // Consider only successful payments
-
-      // Group by user and calculate total tickets purchased
-      {
-        $group: {
-          _id: '$user',
-          totalTickets: { $sum: '$quantity' },
+    const result = await this.paymentModel
+      .aggregate([
+        {
+          $addFields: {
+            user: { $toObjectId: '$user' },
+          },
         },
-      },
-
-      // Sort by totalTickets in the specified order (1 for ascending, -1 for descending)
-      { $sort: { totalTickets: order } },
-
-      // Lookup user details from the users collection
-      {
-        $lookup: {
-          from: 'users', // Ensure this is the correct collection name
-          localField: '_id', // Field from payments (user field)
-          foreignField: '_id', // Field from users to match with localField
-          as: 'userDetails', // Name of the new field to add with user details
+        { $match: { status: PaymentStatus.Success } }, // Consider only successful payments
+        {
+          $group: {
+            _id: '$user',
+            totalBought: { $sum: '$quantity' },
+          },
         },
-      },
-
-      // Unwind userDetails if it's an array
-      // { $unwind: { path: '$userDetails', preserveNullAndEmptyArrays: true } },
-
-      // Project specific fields from userDetails
-      {
-        $project: {
-          _id: 1,
-          // userDetails: {
-          //   name: 1,
-          //   phoneNumber: 1,
-          // },
-          totalTickets: 1,
+        { $sort: { totalBought: -1 } },
+        { $limit: 1 },
+        {
+          $lookup: {
+            from: 'users', // Ensure this is the correct collection name
+            localField: '_id', // Field from payments (user field)
+            foreignField: '_id', // Field from users to match with localField
+            as: 'userDetails', // Name of the new field to add with user details
+          },
         },
-      },
-      // Limit to the top user based on totalTickets
-      { $limit: 1 },
-    ]);
+        { $unwind: { path: '$userDetails', preserveNullAndEmptyArrays: true } },
+        {
+          $project: {
+            _id: 0, // Include payment _id
+            userDetails: {
+              _id: 1, // Include user _id
+              name: 1, // Include user name
+              phoneNumber: 1, // Include user phone number
+            },
+            totalBought: 1, // Include payment creation date
+          },
+        },
+      ])
+      .exec();
 
-    // console.log(result);
     return result;
   }
 
-  async getTicketBought(order: 1 | -1): Promise<any> {
+  async getTicketBought(order: 1 | -1, limit: number = 1, select: {} = { _id: 1, name: 1 }): Promise<any> {
     return this.paymentModel.aggregate([
+      { $addFields: { ticket: { $toObjectId: '$ticket' } } },
       { $match: { status: PaymentStatus.Success } }, // Consider only successful payments
-      { $group: { _id: '$ticket', totalTickets: { $sum: '$quantity' } } }, // Group by ticketId and sum the quantities
-      { $sort: { totalTickets: order } }, // Sort by total tickets in ascending order
-      { $limit: 1 }, // Limit to the ticket with the least purchases
+      { $group: { _id: '$ticket', totalSold: { $sum: '$quantity' } } }, // Group by ticketId and sum the quantities
+      { $sort: { totalSold: order } }, // Sort by total tickets in ascending order
+      { $limit: limit }, // Limit to the ticket with the least purchases
       {
         $lookup: {
           from: 'tickets',
@@ -250,8 +300,8 @@ export class PaymentService {
           as: 'ticket',
         },
       }, // Populate ticket details
-      // { $unwind: '$ticket' }, // Unwind ticket array
-      { $project: { _id: 1, totalTickets: 1 } }, // Return the ticket and total tickets
+      { $unwind: { path: '$ticket', preserveNullAndEmptyArrays: true } }, // Unwind ticket array
+      { $project: { _id: 0, totalSold: 1, ticket: select } }, // Return the ticket and total tickets
     ]);
   }
 
@@ -264,9 +314,9 @@ export class PaymentService {
       ]);
 
     return {
-      mostActiveUser,
-      mostTicketBought,
-      leastTicketBought,
+      mostActiveUser: mostActiveUser[0],
+      mostTicketBought: mostTicketBought[0],
+      leastTicketBought: leastTicketBought[0],
     };
   }
   //================================================================================================

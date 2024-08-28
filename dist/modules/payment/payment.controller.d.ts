@@ -13,6 +13,7 @@ export declare class PaymentController {
         payments: Payment[];
     }>;
     getAnalytics(): Promise<any>;
+    getMostSoldTickets(query: any): Promise<any>;
     getPayment(transactionId: string, user: User): Promise<Payment>;
     approvePayment(transactionId: string, user: User): Promise<Payment>;
     rejectPayment(transactionId: string, user: User): Promise<Payment>;

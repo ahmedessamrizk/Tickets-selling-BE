@@ -20,11 +20,13 @@ const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const tickets_service_1 = require("../tickets/tickets.service");
 const pagination_service_1 = require("../../common/services/pagination.service");
+const payment_service_1 = require("../payment/payment.service");
 let DiscountTicketsService = class DiscountTicketsService {
-    constructor(discountTicketModel, ticketsService, paginationService) {
+    constructor(discountTicketModel, ticketsService, paginationService, paymentService) {
         this.discountTicketModel = discountTicketModel;
         this.ticketsService = ticketsService;
         this.paginationService = paginationService;
+        this.paymentService = paymentService;
         this.populate = [
             {
                 path: 'ticket',
@@ -80,7 +82,16 @@ let DiscountTicketsService = class DiscountTicketsService {
         return { total: totalDiscountTickets, totalPages, discountTickets };
     }
     async findById(id) {
-        return this.discountTicketModel.findById(id).populate(this.populate);
+        let discountTicket = (await this.discountTicketModel
+            .findById(id)
+            .select('name ticket limit used winners'));
+        if (!discountTicket) {
+            throw new common_1.NotFoundException('Discount ticket not found');
+        }
+        discountTicket = discountTicket.toObject();
+        const users = await this.paymentService.getUsersForDiscountTicket(discountTicket.ticket, discountTicket.winners);
+        Object.assign(discountTicket, { users });
+        return discountTicket;
     }
     async update(id, updateDiscountTaskDto) {
         if (updateDiscountTaskDto.ticket) {
@@ -101,6 +112,29 @@ let DiscountTicketsService = class DiscountTicketsService {
         }
         return null;
     }
+    async addWinner(discountTicketId, userId) {
+        const discountTicket = await this.discountTicketModel.findById(discountTicketId);
+        if (!discountTicket) {
+            throw new common_1.NotFoundException('Discount ticket not found');
+        }
+        if (discountTicket.used >= discountTicket.limit) {
+            throw new common_1.ConflictException('Spin has reached its limit for winners size');
+        }
+        if (discountTicket.winners.includes(userId)) {
+            throw new common_1.ConflictException('User has already won this spin');
+        }
+        discountTicket.winners.push(userId);
+        discountTicket.used += 1;
+        await discountTicket.save();
+        return discountTicket;
+    }
+    async getWinners(discountTicketId) {
+        const discountTicket = await this.discountTicketModel.findById(discountTicketId).select('ticket winners').populate('winners', 'name phoneNumber');
+        if (!discountTicket) {
+            throw new common_1.NotFoundException('Discount ticket not found');
+        }
+        return discountTicket;
+    }
 };
 exports.DiscountTicketsService = DiscountTicketsService;
 __decorate([
@@ -114,6 +148,7 @@ exports.DiscountTicketsService = DiscountTicketsService = __decorate([
     __param(0, (0, mongoose_1.InjectModel)(discount_tickets_schema_1.DiscountTicket.name)),
     __metadata("design:paramtypes", [mongoose_2.Model,
         tickets_service_1.TicketsService,
-        pagination_service_1.PaginationService])
+        pagination_service_1.PaginationService,
+        payment_service_1.PaymentService])
 ], DiscountTicketsService);
 //# sourceMappingURL=discount-tickets.service.js.map

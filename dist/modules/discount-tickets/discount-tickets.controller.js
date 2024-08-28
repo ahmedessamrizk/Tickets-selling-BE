@@ -33,6 +33,9 @@ let DiscountTicketsController = class DiscountTicketsController {
     getDiscountTickets(query) {
         return this.discountTicketsService.findAll(query);
     }
+    getDiscountTicketsWinners(id) {
+        return this.discountTicketsService.getWinners(id);
+    }
     getDiscountTicket(id) {
         return this.discountTicketsService.findById(id);
     }
@@ -41,6 +44,9 @@ let DiscountTicketsController = class DiscountTicketsController {
     }
     deleteDiscountTicket(id) {
         return this.discountTicketsService.delete(id);
+    }
+    addWinner(id, userId) {
+        return this.discountTicketsService.addWinner(id, userId);
     }
 };
 exports.DiscountTicketsController = DiscountTicketsController;
@@ -61,6 +67,14 @@ __decorate([
     __metadata("design:paramtypes", [get_discount_tickets_dto_1.GetDiscountTicketsDto]),
     __metadata("design:returntype", Promise)
 ], DiscountTicketsController.prototype, "getDiscountTickets", null);
+__decorate([
+    (0, common_1.Get)('/:id/winners'),
+    (0, roles_decorator_1.Roles)(roles_enum_1.Role.Admin, roles_enum_1.Role.SuperAdmin),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], DiscountTicketsController.prototype, "getDiscountTicketsWinners", null);
 __decorate([
     (0, common_1.Get)('/:id'),
     (0, roles_decorator_1.Roles)(roles_enum_1.Role.Admin, roles_enum_1.Role.SuperAdmin),
@@ -88,6 +102,16 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], DiscountTicketsController.prototype, "deleteDiscountTicket", null);
+__decorate([
+    (0, common_1.Post)('/:id/winners/:userId'),
+    (0, roles_decorator_1.Roles)(roles_enum_1.Role.Admin, roles_enum_1.Role.SuperAdmin),
+    (0, common_1.HttpCode)(200),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], DiscountTicketsController.prototype, "addWinner", null);
 exports.DiscountTicketsController = DiscountTicketsController = __decorate([
     (0, common_1.Controller)('/discount-tickets'),
     (0, common_1.UseGuards)(roles_guard_1.RolesGuard),

@@ -27,7 +27,8 @@ exports.PaymentModule = PaymentModule = __decorate([
             schedule_1.ScheduleModule.forRoot()
         ],
         controllers: [payment_controller_1.PaymentController],
-        providers: [payment_service_1.PaymentService]
+        providers: [payment_service_1.PaymentService],
+        exports: [payment_service_1.PaymentService]
     })
 ], PaymentModule);
 //# sourceMappingURL=payment.module.js.map

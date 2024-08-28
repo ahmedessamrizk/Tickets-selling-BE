@@ -13,6 +13,7 @@ import { Ticket } from '../tickets/schema/tickets.schema';
 import { UpdateDiscountTaskDto } from './dtos/update-discount-task.dto';
 import { GetDiscountTicketsDto } from './dtos/get-discount-tickets.dto';
 import { PaginationService } from '../../common/services/pagination.service';
+import { PaymentService } from '../payment/payment.service';
 
 @Injectable()
 export class DiscountTicketsService {
@@ -21,6 +22,7 @@ export class DiscountTicketsService {
     private readonly discountTicketModel: Model<DiscountTicket>,
     private readonly ticketsService: TicketsService,
     private readonly paginationService: PaginationService,
+    private readonly paymentService: PaymentService,
   ) {}
 
   populate = [
@@ -108,7 +110,20 @@ export class DiscountTicketsService {
   }
 
   async findById(id: string): Promise<DiscountTicket> {
-    return this.discountTicketModel.findById(id).populate(this.populate);
+    let discountTicket = (await this.discountTicketModel
+      .findById(id)
+      .select('name ticket limit used winners')) as any;
+    if (!discountTicket) {
+      throw new NotFoundException('Discount ticket not found');
+    }
+    discountTicket = discountTicket.toObject();
+    const users = await this.paymentService.getUsersForDiscountTicket(
+      discountTicket.ticket,
+      discountTicket.winners
+    );
+
+    Object.assign(discountTicket, { users });
+    return discountTicket;
   }
 
   async update(
@@ -142,5 +157,41 @@ export class DiscountTicketsService {
       throw new NotFoundException('Discount ticket not found');
     }
     return null;
+  }
+
+  async addWinner(
+    discountTicketId: string,
+    userId: string,
+  ): Promise<DiscountTicket> {
+    const discountTicket =
+      await this.discountTicketModel.findById(discountTicketId);
+    if (!discountTicket) {
+      throw new NotFoundException('Discount ticket not found');
+    }
+    if (discountTicket.used >= discountTicket.limit) {
+      throw new ConflictException(
+        'Spin has reached its limit for winners size',
+      );
+    }
+    if (discountTicket.winners.includes(userId as any)) {
+      throw new ConflictException('User has already won this spin');
+    }
+    discountTicket.winners.push(userId);
+    discountTicket.used += 1;
+
+    await discountTicket.save();
+
+    return discountTicket;
+  }
+
+  async getWinners(discountTicketId: string): Promise<any> {
+    const discountTicket = await this.discountTicketModel.findById(
+      discountTicketId,
+    ).select('ticket winners').populate('winners', 'name phoneNumber');
+    if (!discountTicket) {
+      throw new NotFoundException('Discount ticket not found');
+    }
+    
+    return discountTicket;
   }
 }

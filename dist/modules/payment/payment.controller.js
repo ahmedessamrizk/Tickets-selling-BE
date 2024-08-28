@@ -35,6 +35,16 @@ let PaymentController = class PaymentController {
     getAnalytics() {
         return this.paymentService.getAnalytics();
     }
+    getMostSoldTickets(query) {
+        const quantity = query.quantity ? Number(query.quantity) : 5;
+        return this.paymentService.getTicketBought(-1, quantity, {
+            _id: 1,
+            name: 1,
+            price: 1,
+            desc: 1,
+            ImageURL: 1,
+        });
+    }
     getPayment(transactionId, user) {
         return this.paymentService.findOne(transactionId, user);
     }
@@ -74,6 +84,15 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "getAnalytics", null);
+__decorate([
+    (0, common_1.Get)('/most-sold'),
+    (0, roles_decorator_1.Roles)(roles_enum_1.Role.User),
+    (0, common_1.UseGuards)(roles_guard_1.RolesGuard),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PaymentController.prototype, "getMostSoldTickets", null);
 __decorate([
     (0, common_1.Get)('/:transactionId'),
     __param(0, (0, common_1.Param)()),

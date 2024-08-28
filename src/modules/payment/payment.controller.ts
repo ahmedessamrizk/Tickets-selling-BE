@@ -48,6 +48,20 @@ export class PaymentController {
     return this.paymentService.getAnalytics();
   }
 
+  @Get('/most-sold')
+  @Roles(Role.User)
+  @UseGuards(RolesGuard)
+  getMostSoldTickets(@Query() query: any): Promise<any> {
+    const quantity = query.quantity ? Number(query.quantity) : 5;
+    return this.paymentService.getTicketBought(-1, quantity, {
+      _id: 1,
+      name: 1,
+      price: 1,
+      desc: 1,
+      ImageURL: 1,
+    });
+  }
+
   @Get('/:transactionId')
   getPayment(
     @Param() transactionId: string,

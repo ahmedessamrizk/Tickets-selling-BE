@@ -47,6 +47,14 @@ export class DiscountTicketsController {
     return this.discountTicketsService.findAll(query);
   }
 
+  @Get('/:id/winners')
+  @Roles(Role.Admin, Role.SuperAdmin)
+  getDiscountTicketsWinners(
+    @Param('id') id: string,
+  ): Promise<DiscountTicket[]> {
+    return this.discountTicketsService.getWinners(id);
+  }
+
   @Get('/:id')
   @Roles(Role.Admin, Role.SuperAdmin)
   getDiscountTicket(@Param('id') id: string): Promise<DiscountTicket> {
@@ -68,5 +76,15 @@ export class DiscountTicketsController {
   @HttpCode(204)
   deleteDiscountTicket(@Param('id') id: string): Promise<null> {
     return this.discountTicketsService.delete(id);
+  }
+
+  @Post('/:id/winners/:userId')
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @HttpCode(200)
+  addWinner(
+    @Param('id') id: string,
+    @Param('userId') userId: string,
+  ): Promise<DiscountTicket> {
+    return this.discountTicketsService.addWinner(id, userId);
   }
 }
