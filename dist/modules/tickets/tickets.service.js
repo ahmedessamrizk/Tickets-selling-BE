@@ -43,15 +43,16 @@ let TicketsService = class TicketsService {
         }
     }
     async findAll(query, user) {
-        let expose = {};
+        let expose = {}, filter = {};
         if (!user || user.role === roles_enum_1.Role.User) {
             expose = { quantity: 0, createdBy: 0 };
+            filter = { quantity: { $gt: 0 } };
         }
         const { page, size } = query;
         const { limit, skip } = this.paginationService.paginate(+page, +size);
         const [tickets, totalTickets] = await Promise.all([
             this.ticketModel
-                .find()
+                .find(filter)
                 .limit(limit)
                 .skip(skip)
                 .populate([
@@ -61,7 +62,7 @@ let TicketsService = class TicketsService {
                 },
             ])
                 .select(expose),
-            this.ticketModel.find().countDocuments(),
+            this.ticketModel.find(filter).countDocuments(),
         ]);
         const totalPages = Math.ceil(totalTickets / limit);
         return { total: totalTickets, totalPages, tickets };

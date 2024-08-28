@@ -8,27 +8,29 @@ import {
   } from 'class-validator';
   
   export class UpdateTicketDto {
+    _id?: string;
+
     @IsString()
     @MinLength(2)
     @IsOptional()
-    name: string;
+    name?: string;
   
     @IsString()
     @IsOptional()
-    desc: string;
+    desc?: string;
   
     @IsNumber()
     @Min(5)
     @IsOptional()
-    price: number;
+    price?: number;
   
     @IsNumber()
     @Min(1)
     @IsOptional()
-    quantity: number;
+    quantity?: number;
   
     @IsDateString()
     @IsOptional()
-    expiry: Date;
+    expiry?: Date;
   }
   

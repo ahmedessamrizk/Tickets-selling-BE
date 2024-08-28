@@ -50,9 +50,12 @@ let DiscountTicketsService = class DiscountTicketsService {
         };
     }
     async checkValidTicket(ticket) {
-        const checkTicket = await this.ticketsService.findOne({ _id: ticket }, 'name');
+        const checkTicket = await this.ticketsService.findOne({ _id: ticket }, 'name expiry');
         if (!checkTicket) {
             throw new common_1.NotFoundException('The provided ticket does not exist');
+        }
+        if (checkTicket.expiry < new Date()) {
+            throw new common_1.ConflictException('The provided ticket has expired');
         }
         const discountTicket = await this.findOne({
             ticket: ticket,

@@ -61,10 +61,14 @@ export class DiscountTicketsService {
     //check that ticketId is valid
     const checkTicket = await this.ticketsService.findOne(
       { _id: ticket },
-      'name',
+      'name expiry',
     );
     if (!checkTicket) {
       throw new NotFoundException('The provided ticket does not exist');
+    }
+
+    if (checkTicket.expiry < new Date()) {
+      throw new ConflictException('The provided ticket has expired');
     }
 
     //check that ticketId is unique

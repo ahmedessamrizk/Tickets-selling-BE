@@ -31,7 +31,7 @@ export class TicketsService {
     return this.ticketModel.create(createTicketDto);
   }
 
-  findOne(query: Partial<CreateTicketDto>, select = ''): Promise<Ticket> {
+  findOne(query: any, select = ''): Promise<Ticket> {
     return this.ticketModel.findOne(query).select(select);
   }
 
@@ -51,10 +51,12 @@ export class TicketsService {
     query: GetTicketsDto,
     user: User,
   ): Promise<{ total: number; totalPages: number; tickets: Ticket[] }> {
-    let expose = {};
+    let expose = {},
+      filter = {};
     // Remove quantity for users or guests
     if (!user || user.role === Role.User) {
       expose = { quantity: 0, createdBy: 0 };
+      filter = { quantity: { $gt: 0 } };
     }
 
     const { page, size } = query;
@@ -63,7 +65,7 @@ export class TicketsService {
 
     const [tickets, totalTickets] = await Promise.all([
       this.ticketModel
-        .find()
+        .find(filter)
         .limit(limit)
         .skip(skip)
         .populate([
@@ -73,7 +75,7 @@ export class TicketsService {
           },
         ])
         .select(expose),
-      this.ticketModel.find().countDocuments(),
+      this.ticketModel.find(filter).countDocuments(),
     ]);
     // Calculate the number of pages available
     const totalPages = Math.ceil(totalTickets / limit);
@@ -81,7 +83,7 @@ export class TicketsService {
     return { total: totalTickets, totalPages, tickets };
   }
 
-  async update(id: string, updateTicketDto: UpdateTicketDto): Promise<Ticket> {
+  async update(id: any, updateTicketDto: UpdateTicketDto): Promise<Ticket> {
     if (updateTicketDto.name) {
       await this.checkValid(updateTicketDto, id);
     }
