@@ -32,7 +32,7 @@ let PaymentService = class PaymentService {
         const { ticketId, quantity } = createPaymentDto;
         const ticket = await this.ticketsService.findOne({ _id: ticketId });
         if (!ticket || ticket.expiry < new Date()) {
-            throw new common_1.NotFoundException('Ticket not found');
+            throw new common_1.NotFoundException('Ticket expired or not found');
         }
         if (ticket.quantity < quantity) {
             throw new common_1.NotFoundException('Not enough tickets available');

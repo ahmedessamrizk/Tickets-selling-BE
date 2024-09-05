@@ -33,7 +33,7 @@ export class PaymentService {
     const ticket = await this.ticketsService.findOne({ _id: ticketId });
 
     if (!ticket || ticket.expiry < new Date()) {
-      throw new NotFoundException('Ticket not found');
+      throw new NotFoundException('Ticket expired or not found');
     }
 
     //check that ticket is not sold out
