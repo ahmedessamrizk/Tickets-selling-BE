@@ -52,12 +52,18 @@ export class TicketsService {
     user: User,
   ): Promise<{ total: number; totalPages: number; tickets: Ticket[] }> {
     let expose = {},
-      filter = {};
+      filter = {},
+      sort = {};
     // Remove quantity for users or guests
     if (!user || user.role === Role.User) {
       expose = { quantity: 0, createdBy: 0 };
       //TODO: filter with tickets not expired
       filter = { quantity: { $gt: 0 } };
+    }
+    if (query.sortBy) {
+      sort[query['sortBy']] = Number(query.sortOrder) || -1;
+    } else {
+      sort = { createdAt: -1 };
     }
 
     const { page, size } = query;
@@ -75,7 +81,8 @@ export class TicketsService {
             select: 'name',
           },
         ])
-        .select(expose),
+        .select(expose)
+        .sort(sort),
       this.ticketModel.find(filter).countDocuments(),
     ]);
     // Calculate the number of pages available

@@ -8,4 +8,12 @@ export class GetTicketsDto {
   @IsString()
   @IsOptional()
   size: number;
+
+  @IsString()
+  @IsOptional()
+  sortBy: string;
+
+  @IsString()
+  @IsOptional()
+  sortOrder: string;
 }

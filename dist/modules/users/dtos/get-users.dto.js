@@ -29,4 +29,19 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], GetUsersDto.prototype, "role", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], GetUsersDto.prototype, "isBlocked", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], GetUsersDto.prototype, "sortBy", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], GetUsersDto.prototype, "sortOrder", void 0);
 //# sourceMappingURL=get-users.dto.js.map

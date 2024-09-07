@@ -11,7 +11,7 @@ export declare class AuthService {
     private readonly jwtService;
     constructor(usersService: UsersService, encryptionService: EncryptionService, configService: ConfigService, jwtService: JwtService);
     signup(createUserDto: Partial<CreateUserDto>): Promise<void>;
-    signin(signinDto: SigninDto): Promise<string>;
+    signin(signinDto: SigninDto): Promise<any>;
     private hashPassword;
     createAdmin(createUserDto: Partial<CreateUserDto>): Promise<void>;
 }

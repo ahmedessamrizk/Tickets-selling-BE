@@ -29,13 +29,13 @@ let AuthController = class AuthController {
         return this.authService.signup(body);
     }
     async signin(res, body) {
-        const token = await this.authService.signin(body);
+        const { token, user } = await this.authService.signin(body);
         res.cookie('accessToken', token, {
             httpOnly: true,
             sameSite: 'none',
             secure: true,
         });
-        res.json({ message: 'successful', statusCode: 200 });
+        res.json({ message: 'successful', statusCode: 200, user: user });
     }
     async createAdmin(body) {
         return this.authService.createAdmin(body);

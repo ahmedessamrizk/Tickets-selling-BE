@@ -29,13 +29,13 @@ export class AuthController {
   @HttpCode(200)
   @Post('/signin')
   async signin(@Res() res: Response, @Body() body: SigninDto) {
-    const token = await this.authService.signin(body);
+    const { token, user } = await this.authService.signin(body);
     res.cookie('accessToken', token, {
       httpOnly: true,
       sameSite: 'none',
       secure: true,
     });
-    res.json({ message: 'successful', statusCode: 200 });
+    res.json({ message: 'successful', statusCode: 200, user: user });
   }
 
   @Post('/admin')

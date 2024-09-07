@@ -47,7 +47,7 @@ export class AuthService {
     return this.usersService.create(createUserDto);
   }
 
-  async signin(signinDto: SigninDto): Promise<string> {
+  async signin(signinDto: SigninDto): Promise<any> {
     const { phoneNumber, password } = signinDto;
 
     //check if email and password are correct.
@@ -67,7 +67,8 @@ export class AuthService {
       role: user.role,
     };
 
-    return this.jwtService.sign(payload);
+    const token = this.jwtService.sign(payload);
+    return {user: {_id: user._id,name: user.name, role: user.role}, token};
   }
 
   private async hashPassword(password: string): Promise<string> {

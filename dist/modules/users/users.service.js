@@ -34,15 +34,31 @@ let UsersService = class UsersService {
         return this.userModel.findById(id);
     }
     async findAll(query) {
-        const { page, size, role } = query;
+        const { page, size, role, isBlocked, sortBy, sortOrder } = query;
+        const filter = {};
+        const sort = {};
+        if (role) {
+            filter['role'] = role;
+        }
+        if (isBlocked) {
+            filter['isBlocked'] = isBlocked;
+        }
+        if (sortBy) {
+            sort[sortBy] = sortOrder ? +sortOrder : 1;
+        }
+        else {
+            sort['role'] = 1;
+            sort['isBlocked'] = -1;
+        }
         const { limit, skip } = this.paginationService.paginate(+page, +size);
         const [users, totalUsers] = await Promise.all([
             this.userModel
-                .find(role ? { role } : {})
+                .find(filter)
                 .limit(limit)
                 .skip(skip)
-                .select('-password -__v'),
-            this.userModel.find(role ? { role } : {}).countDocuments(),
+                .select('-password -__v')
+                .sort(sort),
+            this.userModel.find(filter).countDocuments(),
         ]);
         const totalPages = Math.ceil(totalUsers / limit);
         return { total: totalUsers, totalPages, users };

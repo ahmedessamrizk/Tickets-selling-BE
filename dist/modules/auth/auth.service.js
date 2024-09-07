@@ -54,7 +54,8 @@ let AuthService = class AuthService {
             name: user.name,
             role: user.role,
         };
-        return this.jwtService.sign(payload);
+        const token = this.jwtService.sign(payload);
+        return { user: { _id: user._id, name: user.name, role: user.role }, token };
     }
     async hashPassword(password) {
         const saltRounds = this.configService.get('SALT_ROUNDS');

@@ -12,4 +12,16 @@ export class GetUsersDto {
   @IsString()
   @IsOptional()
   role: string;
+
+  @IsString()
+  @IsOptional()
+  isBlocked: boolean;
+
+  @IsString()
+  @IsOptional()
+  sortBy: string;
+
+  @IsString()
+  @IsOptional()
+  sortOrder: string;
 }

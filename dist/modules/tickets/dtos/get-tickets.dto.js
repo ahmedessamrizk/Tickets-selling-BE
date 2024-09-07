@@ -24,4 +24,14 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Number)
 ], GetTicketsDto.prototype, "size", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], GetTicketsDto.prototype, "sortBy", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], GetTicketsDto.prototype, "sortOrder", void 0);
 //# sourceMappingURL=get-tickets.dto.js.map

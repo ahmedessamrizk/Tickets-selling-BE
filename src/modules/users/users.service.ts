@@ -26,18 +26,36 @@ export class UsersService {
     return this.userModel.findById(id);
   }
 
-  async findAll(query: GetUsersDto): Promise<{ total: number; totalPages: number; users: User[] }> {
-    const { page, size, role } = query;
+  async findAll(
+    query: GetUsersDto,
+  ): Promise<{ total: number; totalPages: number; users: User[] }> {
+    const { page, size, role, isBlocked, sortBy, sortOrder } = query;
+    const filter = {};
+    const sort = {};
+
+    if (role) {
+      filter['role'] = role;
+    }
+    if (isBlocked) {
+      filter['isBlocked'] = isBlocked;
+    }
+
+    if (sortBy) {
+      sort[sortBy] = sortOrder ? +sortOrder : 1;
+    } else {
+      sort['role'] = 1;
+      sort['isBlocked'] = -1;
+    }
 
     const { limit, skip } = this.paginationService.paginate(+page, +size);
-
     const [users, totalUsers] = await Promise.all([
       this.userModel
-        .find(role ? { role } : {})
+        .find(filter)
         .limit(limit)
         .skip(skip)
-        .select('-password -__v'),
-      this.userModel.find(role ? { role } : {}).countDocuments(),
+        .select('-password -__v')
+        .sort(sort),
+      this.userModel.find(filter).countDocuments(),
     ]);
     // Calculate the number of pages available
     const totalPages = Math.ceil(totalUsers / limit);

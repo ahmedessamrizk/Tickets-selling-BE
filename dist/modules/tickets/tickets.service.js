@@ -43,10 +43,16 @@ let TicketsService = class TicketsService {
         }
     }
     async findAll(query, user) {
-        let expose = {}, filter = {};
+        let expose = {}, filter = {}, sort = {};
         if (!user || user.role === roles_enum_1.Role.User) {
             expose = { quantity: 0, createdBy: 0 };
             filter = { quantity: { $gt: 0 } };
+        }
+        if (query.sortBy) {
+            sort[query['sortBy']] = Number(query.sortOrder) || -1;
+        }
+        else {
+            sort = { createdAt: -1 };
         }
         const { page, size } = query;
         const { limit, skip } = this.paginationService.paginate(+page, +size);
@@ -61,7 +67,8 @@ let TicketsService = class TicketsService {
                     select: 'name',
                 },
             ])
-                .select(expose),
+                .select(expose)
+                .sort(sort),
             this.ticketModel.find(filter).countDocuments(),
         ]);
         const totalPages = Math.ceil(totalTickets / limit);
