@@ -79,7 +79,7 @@ export class DiscountTicketsService {
     });
     if (discountTicket) {
       throw new ConflictException(
-        'The provided ticket already has a discount ticket',
+        'The provided ticket already has a spin wheel',
       );
     }
 
@@ -119,7 +119,7 @@ export class DiscountTicketsService {
     discountTicket = discountTicket.toObject();
     const users = await this.paymentService.getUsersForDiscountTicket(
       discountTicket.ticket,
-      discountTicket.winners
+      discountTicket.winners,
     );
 
     Object.assign(discountTicket, { users });
@@ -185,13 +185,14 @@ export class DiscountTicketsService {
   }
 
   async getWinners(discountTicketId: string): Promise<any> {
-    const discountTicket = await this.discountTicketModel.findById(
-      discountTicketId,
-    ).select('ticket winners').populate('winners', 'name phoneNumber');
+    const discountTicket = await this.discountTicketModel
+      .findById(discountTicketId)
+      .select('ticket winners')
+      .populate('winners', 'name phoneNumber');
     if (!discountTicket) {
       throw new NotFoundException('Discount ticket not found');
     }
-    
+
     return discountTicket;
   }
 }

@@ -37,14 +37,6 @@ export class AuthService {
     //encrypt nationalId
     const encryptedNationalId = this.encryptionService.encrypt(nationalId);
 
-    const checkExist = await this.usersService.findOne({
-      nationalId: encryptedNationalId,
-    });
-
-    if (checkExist) {
-      throw new ConflictException('User already exists');
-    }
-
     //hash password
     const hashedPassword = await this.hashPassword(password);
     Object.assign(createUserDto, {

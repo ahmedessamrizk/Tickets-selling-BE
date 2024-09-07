@@ -82,7 +82,7 @@ let TicketsService = class TicketsService {
             ticket: id,
         });
         if (discountTicket) {
-            throw new common_1.BadRequestException('Ticket has discount ticket');
+            throw new common_1.BadRequestException('Ticket has spin wheel');
         }
         const ticket = await this.ticketModel.findByIdAndDelete(id);
         if (!ticket) {

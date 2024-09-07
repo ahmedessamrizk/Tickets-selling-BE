@@ -107,7 +107,7 @@ export class TicketsService {
       ticket: id,
     });
     if (discountTicket) {
-      throw new BadRequestException('Ticket has discount ticket');
+      throw new BadRequestException('Ticket has spin wheel');
     }
     const ticket = await this.ticketModel.findByIdAndDelete(id);
     if (!ticket) {

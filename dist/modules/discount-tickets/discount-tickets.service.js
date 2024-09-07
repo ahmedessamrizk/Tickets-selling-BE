@@ -63,7 +63,7 @@ let DiscountTicketsService = class DiscountTicketsService {
             ticket: ticket,
         });
         if (discountTicket) {
-            throw new common_1.ConflictException('The provided ticket already has a discount ticket');
+            throw new common_1.ConflictException('The provided ticket already has a spin wheel');
         }
         return checkTicket;
     }
@@ -129,7 +129,10 @@ let DiscountTicketsService = class DiscountTicketsService {
         return discountTicket;
     }
     async getWinners(discountTicketId) {
-        const discountTicket = await this.discountTicketModel.findById(discountTicketId).select('ticket winners').populate('winners', 'name phoneNumber');
+        const discountTicket = await this.discountTicketModel
+            .findById(discountTicketId)
+            .select('ticket winners')
+            .populate('winners', 'name phoneNumber');
         if (!discountTicket) {
             throw new common_1.NotFoundException('Discount ticket not found');
         }
