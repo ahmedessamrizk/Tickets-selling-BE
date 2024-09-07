@@ -49,7 +49,7 @@ export class PaymentController {
   }
 
   @Get('/most-sold')
-  @Roles(Role.User)
+  @Roles(Role.User, Role.Admin, Role.SuperAdmin)
   @UseGuards(RolesGuard)
   getMostSoldTickets(@Query() query: any): Promise<any> {
     const quantity = query.quantity ? Number(query.quantity) : 5;

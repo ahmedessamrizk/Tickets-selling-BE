@@ -86,7 +86,7 @@ __decorate([
 ], PaymentController.prototype, "getAnalytics", null);
 __decorate([
     (0, common_1.Get)('/most-sold'),
-    (0, roles_decorator_1.Roles)(roles_enum_1.Role.User),
+    (0, roles_decorator_1.Roles)(roles_enum_1.Role.User, roles_enum_1.Role.Admin, roles_enum_1.Role.SuperAdmin),
     (0, common_1.UseGuards)(roles_guard_1.RolesGuard),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
