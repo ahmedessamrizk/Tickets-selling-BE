@@ -22,6 +22,7 @@ const roles_decorator_1 = require("../../common/decorators/roles.decorator");
 const roles_guard_1 = require("../../common/guards/roles.guard");
 const get_tickets_dto_1 = require("./dtos/get-tickets.dto");
 const users_schema_1 = require("../users/schema/users.schema");
+const public_decorator_1 = require("../../common/decorators/public.decorator");
 let PaymentController = class PaymentController {
     constructor(paymentService) {
         this.paymentService = paymentService;
@@ -85,9 +86,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "getAnalytics", null);
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/most-sold'),
-    (0, roles_decorator_1.Roles)(roles_enum_1.Role.User, roles_enum_1.Role.Admin, roles_enum_1.Role.SuperAdmin),
-    (0, common_1.UseGuards)(roles_guard_1.RolesGuard),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

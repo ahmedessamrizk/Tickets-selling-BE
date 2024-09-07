@@ -49,8 +49,8 @@ export class PaymentController {
     return this.paymentService.getAnalytics();
   }
 
-  @Get('/most-sold')
   @Public()
+  @Get('/most-sold')
   getMostSoldTickets(@Query() query: any): Promise<any> {
     const quantity = query.quantity ? Number(query.quantity) : 5;
     return this.paymentService.getTicketBought(-1, quantity, {
