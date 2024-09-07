@@ -18,6 +18,7 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { GetPaymentsDto } from './dtos/get-tickets.dto';
 import { Payment } from './schema/payment.schema';
 import { User } from '../users/schema/users.schema';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('/payment')
 export class PaymentController {
@@ -49,6 +50,7 @@ export class PaymentController {
   }
 
   @Get('/most-sold')
+  @Public()
   getMostSoldTickets(@Query() query: any): Promise<any> {
     const quantity = query.quantity ? Number(query.quantity) : 5;
     return this.paymentService.getTicketBought(-1, quantity, {
