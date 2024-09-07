@@ -57,8 +57,7 @@ export class TicketsService {
     // Remove quantity for users or guests
     if (!user || user.role === Role.User) {
       expose = { quantity: 0, createdBy: 0 };
-      //TODO: filter with tickets not expired
-      filter = { quantity: { $gt: 0 } };
+      filter = { quantity: { $gt: 0 }, createdAt: { $gte: new Date() } };
     }
     if (query.sortBy) {
       sort[query['sortBy']] = Number(query.sortOrder) || -1;
