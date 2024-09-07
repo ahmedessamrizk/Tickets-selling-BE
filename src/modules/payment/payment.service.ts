@@ -63,6 +63,10 @@ export class PaymentService {
     const userSelect = user.role === Role.User ? 'name' : 'name phoneNumber';
     const ticketSelect = user.role === Role.User ? 'name' : 'name quantity';
 
+    if (query.status) {
+      filter['status'] = query.status;
+    }
+
     const { page, size } = query;
     const { limit, skip } = this.paginationService.paginate(+page, +size);
 
@@ -81,7 +85,7 @@ export class PaymentService {
             select: ticketSelect,
           },
         ])
-        .sort({ createdAt: 1 }),
+        .sort({ status: -1, createdAt: 1 }),
       this.paymentModel.find(filter).countDocuments(),
     ]);
 
@@ -285,7 +289,11 @@ export class PaymentService {
     return result;
   }
 
-  async getTicketBought(order: 1 | -1, limit: number = 1, select: {} = { _id: 1, name: 1 }): Promise<any> {
+  async getTicketBought(
+    order: 1 | -1,
+    limit: number = 1,
+    select: {} = { _id: 1, name: 1 },
+  ): Promise<any> {
     return this.paymentModel.aggregate([
       { $addFields: { ticket: { $toObjectId: '$ticket' } } },
       { $match: { status: PaymentStatus.Success } }, // Consider only successful payments

@@ -51,6 +51,9 @@ let PaymentService = class PaymentService {
         const filter = user.role === roles_enum_1.Role.User ? { user: user._id } : {};
         const userSelect = user.role === roles_enum_1.Role.User ? 'name' : 'name phoneNumber';
         const ticketSelect = user.role === roles_enum_1.Role.User ? 'name' : 'name quantity';
+        if (query.status) {
+            filter['status'] = query.status;
+        }
         const { page, size } = query;
         const { limit, skip } = this.paginationService.paginate(+page, +size);
         const [payments, totalPayments] = await Promise.all([
@@ -68,7 +71,7 @@ let PaymentService = class PaymentService {
                     select: ticketSelect,
                 },
             ])
-                .sort({ createdAt: 1 }),
+                .sort({ status: -1, createdAt: 1 }),
             this.paymentModel.find(filter).countDocuments(),
         ]);
         const totalPages = Math.ceil(totalPayments / limit);

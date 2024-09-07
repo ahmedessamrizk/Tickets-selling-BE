@@ -8,4 +8,8 @@ export class GetPaymentsDto {
   @IsString()
   @IsOptional()
   size: number;
+
+  @IsString()
+  @IsOptional()
+  status: string;
 }
