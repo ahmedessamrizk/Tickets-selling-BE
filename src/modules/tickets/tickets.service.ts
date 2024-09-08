@@ -13,6 +13,8 @@ import { UpdateTicketDto } from './dtos/update-ticket.dto';
 import { DiscountTicket } from '../discount-tickets/schema/discount-tickets.schema';
 import { PaginationService } from '../../common/services/pagination.service';
 import { GetTicketsDto } from './dtos/get-tickets.dto';
+import { Payment } from '../payment/schema/payment.schema';
+import { PaymentStatus } from 'src/common/enums/payment.enum';
 
 @Injectable()
 export class TicketsService {
@@ -20,6 +22,7 @@ export class TicketsService {
     @InjectModel(Ticket.name) private ticketModel: Model<Ticket>,
     @InjectModel(DiscountTicket.name)
     private readonly discountTicketModel: Model<DiscountTicket>,
+    @InjectModel(Payment.name) private paymentModel: Model<Payment>,
     private readonly paginationService: PaginationService,
   ) {}
 
@@ -57,7 +60,7 @@ export class TicketsService {
     // Remove quantity for users or guests
     if (!user || user.role === Role.User) {
       expose = { quantity: 0, createdBy: 0 };
-      filter = { quantity: { $gt: 0 }, createdAt: { $gte: new Date() } };
+      filter = { quantity: { $gt: 0 } };
     }
     if (query.sortBy) {
       sort[query['sortBy']] = Number(query.sortOrder) || -1;
@@ -108,17 +111,35 @@ export class TicketsService {
   }
 
   async delete(id: string): Promise<null> {
-    //check discount-ticket for this ticket
-    const discountTicket = await this.discountTicketModel.findOne({
-      ticket: id,
-    });
-    if (discountTicket) {
-      throw new BadRequestException('Ticket has spin wheel');
-    }
-    const ticket = await this.ticketModel.findByIdAndDelete(id);
+    const ticket = await this.ticketModel.findById(id);
+
+    //Don't delete ticket which is used in payment
     if (!ticket) {
       throw new ConflictException('Ticket not found');
     }
+
+    if (ticket.expiry > new Date()) {
+      const payment = await this.paymentModel.findOne({
+        ticket: id,
+        status: { $in: [PaymentStatus.Pending, PaymentStatus.Success] },
+      });
+      if (payment) {
+        throw new BadRequestException('Ticket is used in payment');
+      }
+    }
+
+    //check discount-ticket for this ticket
+    const discountTicket = await this.discountTicketModel
+      .findOne({
+        ticket: id,
+      })
+      .populate('ticket');
+
+    if (discountTicket) {
+      throw new BadRequestException('Ticket has spin wheel');
+    }
+
+    await this.ticketModel.deleteOne({ ticket: id });
     return null;
   }
 }

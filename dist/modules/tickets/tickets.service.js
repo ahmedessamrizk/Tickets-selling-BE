@@ -20,10 +20,13 @@ const mongoose_2 = require("@nestjs/mongoose");
 const roles_enum_1 = require("../../common/enums/roles.enum");
 const discount_tickets_schema_1 = require("../discount-tickets/schema/discount-tickets.schema");
 const pagination_service_1 = require("../../common/services/pagination.service");
+const payment_schema_1 = require("../payment/schema/payment.schema");
+const payment_enum_1 = require("../../common/enums/payment.enum");
 let TicketsService = class TicketsService {
-    constructor(ticketModel, discountTicketModel, paginationService) {
+    constructor(ticketModel, discountTicketModel, paymentModel, paginationService) {
         this.ticketModel = ticketModel;
         this.discountTicketModel = discountTicketModel;
+        this.paymentModel = paymentModel;
         this.paginationService = paginationService;
     }
     async create(createTicketDto, user) {
@@ -85,16 +88,28 @@ let TicketsService = class TicketsService {
         return updatedTicket;
     }
     async delete(id) {
-        const discountTicket = await this.discountTicketModel.findOne({
-            ticket: id,
-        });
-        if (discountTicket) {
-            throw new common_1.BadRequestException('Ticket has spin wheel');
-        }
-        const ticket = await this.ticketModel.findByIdAndDelete(id);
+        const ticket = await this.ticketModel.findById(id);
         if (!ticket) {
             throw new common_1.ConflictException('Ticket not found');
         }
+        if (ticket.expiry > new Date()) {
+            const payment = await this.paymentModel.findOne({
+                ticket: id,
+                status: { $in: [payment_enum_1.PaymentStatus.Pending, payment_enum_1.PaymentStatus.Success] },
+            });
+            if (payment) {
+                throw new common_1.BadRequestException('Ticket is used in payment');
+            }
+        }
+        const discountTicket = await this.discountTicketModel
+            .findOne({
+            ticket: id,
+        })
+            .populate('ticket');
+        if (discountTicket) {
+            throw new common_1.BadRequestException('Ticket has spin wheel');
+        }
+        await this.ticketModel.deleteOne({ ticket: id });
         return null;
     }
 };
@@ -103,7 +118,9 @@ exports.TicketsService = TicketsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_2.InjectModel)(tickets_schema_1.Ticket.name)),
     __param(1, (0, mongoose_2.InjectModel)(discount_tickets_schema_1.DiscountTicket.name)),
+    __param(2, (0, mongoose_2.InjectModel)(payment_schema_1.Payment.name)),
     __metadata("design:paramtypes", [mongoose_1.Model,
+        mongoose_1.Model,
         mongoose_1.Model,
         pagination_service_1.PaginationService])
 ], TicketsService);
