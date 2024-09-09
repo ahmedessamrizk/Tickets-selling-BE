@@ -91,7 +91,11 @@ let DiscountTicketsService = class DiscountTicketsService {
         return discountTicket;
     }
     async update(id, updateDiscountTaskDto) {
+        if (updateDiscountTaskDto.ticket === null) {
+            delete updateDiscountTaskDto.ticket;
+        }
         if (updateDiscountTaskDto.ticket) {
+            console.log("entered");
             await this.checkValidTicket(updateDiscountTaskDto.ticket);
         }
         const updateDiscountTicket = await this.discountTicketModel.findByIdAndUpdate(id, updateDiscountTaskDto, {

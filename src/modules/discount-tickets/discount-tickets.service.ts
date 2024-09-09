@@ -130,7 +130,11 @@ export class DiscountTicketsService {
     id: string,
     updateDiscountTaskDto: UpdateDiscountTaskDto,
   ): Promise<DiscountTicket> {
+    if (updateDiscountTaskDto.ticket === null) {
+      delete updateDiscountTaskDto.ticket;
+    }
     if (updateDiscountTaskDto.ticket) {
+      console.log("entered")
       await this.checkValidTicket(updateDiscountTaskDto.ticket);
     }
 
@@ -168,17 +172,20 @@ export class DiscountTicketsService {
     if (!discountTicket) {
       throw new NotFoundException('Discount ticket not found');
     }
-    const ticket = await this.ticketsService.findOne({
-      _id: discountTicket.ticket,
-    }, 'expiry');
+    const ticket = await this.ticketsService.findOne(
+      {
+        _id: discountTicket.ticket,
+      },
+      'expiry',
+    );
 
-    if(!ticket) {
+    if (!ticket) {
       throw new NotFoundException('Ticket not found');
     }
-    if(ticket.expiry > new Date()) {
+    if (ticket.expiry > new Date()) {
       throw new ConflictException('Ticket not expired yet');
     }
-    
+
     if (discountTicket.used >= discountTicket.limit) {
       throw new ConflictException(
         'Spin has reached its limit for winners size',
