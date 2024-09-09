@@ -37,6 +37,9 @@ let TicketsController = class TicketsController {
     async getTicketsForAdmins(query, user) {
         return this.ticketsService.findAll(query, user);
     }
+    async getTicketsForSpin() {
+        return this.ticketsService.getTicketsForDiscountTickets();
+    }
     updateTicket(id, updateTicketDto) {
         return this.ticketsService.update(id, updateTicketDto);
     }
@@ -75,6 +78,14 @@ __decorate([
         users_schema_1.User]),
     __metadata("design:returntype", Promise)
 ], TicketsController.prototype, "getTicketsForAdmins", null);
+__decorate([
+    (0, common_1.Get)('/spin'),
+    (0, roles_decorator_1.Roles)(roles_enum_1.Role.Admin, roles_enum_1.Role.SuperAdmin),
+    (0, common_1.UseGuards)(roles_guard_1.RolesGuard),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], TicketsController.prototype, "getTicketsForSpin", null);
 __decorate([
     (0, common_1.Patch)('/:id'),
     (0, roles_decorator_1.Roles)(roles_enum_1.Role.Admin, roles_enum_1.Role.SuperAdmin),

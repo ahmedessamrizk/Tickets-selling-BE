@@ -54,6 +54,14 @@ export class TicketsController {
     return this.ticketsService.findAll(query, user);
   }
 
+  @Get('/spin')
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(RolesGuard)
+  async getTicketsForSpin(
+  ): Promise<Ticket[]> {
+    return this.ticketsService.getTicketsForDiscountTickets();
+  }
+
   @Patch('/:id')
   @Roles(Role.Admin, Role.SuperAdmin)
   @UseGuards(RolesGuard)

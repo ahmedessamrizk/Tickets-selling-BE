@@ -18,6 +18,7 @@ export declare class TicketsController {
         totalPages: number;
         tickets: Ticket[];
     }>;
+    getTicketsForSpin(): Promise<Ticket[]>;
     updateTicket(id: string, updateTicketDto: UpdateTicketDto): Promise<Ticket>;
     deleteTicket(id: string): Promise<null>;
 }

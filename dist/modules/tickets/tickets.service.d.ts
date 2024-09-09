@@ -21,6 +21,7 @@ export declare class TicketsService {
         totalPages: number;
         tickets: Ticket[];
     }>;
+    getTicketsForDiscountTickets(): Promise<Ticket[]>;
     update(id: any, updateTicketDto: UpdateTicketDto): Promise<Ticket>;
     delete(id: string): Promise<null>;
 }

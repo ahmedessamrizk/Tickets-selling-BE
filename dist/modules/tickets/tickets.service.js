@@ -77,6 +77,15 @@ let TicketsService = class TicketsService {
         const totalPages = Math.ceil(totalTickets / limit);
         return { total: totalTickets, totalPages, tickets };
     }
+    async getTicketsForDiscountTickets() {
+        const discountTicketIds = await this.discountTicketModel.distinct('ticket');
+        const ticketsWithoutDiscount = await this.ticketModel
+            .find({
+            _id: { $nin: discountTicketIds },
+        })
+            .select('name');
+        return ticketsWithoutDiscount;
+    }
     async update(id, updateTicketDto) {
         if (updateTicketDto.name) {
             await this.checkValid(updateTicketDto, id);

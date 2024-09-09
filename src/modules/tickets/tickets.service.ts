@@ -93,6 +93,19 @@ export class TicketsService {
     return { total: totalTickets, totalPages, tickets };
   }
 
+  async getTicketsForDiscountTickets(): Promise<Ticket[]> {
+    const discountTicketIds =
+      await this.discountTicketModel.distinct('ticket');
+
+    const ticketsWithoutDiscount = await this.ticketModel
+      .find({
+        _id: { $nin: discountTicketIds },
+      })
+      .select('name'); // Retrieve only the 'name' field and exclude '_id'
+
+    return ticketsWithoutDiscount;
+  }
+
   async update(id: any, updateTicketDto: UpdateTicketDto): Promise<Ticket> {
     if (updateTicketDto.name) {
       await this.checkValid(updateTicketDto, id);
