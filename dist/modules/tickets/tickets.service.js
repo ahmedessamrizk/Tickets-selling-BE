@@ -109,7 +109,7 @@ let TicketsService = class TicketsService {
         if (discountTicket) {
             throw new common_1.BadRequestException('Ticket has spin wheel');
         }
-        await this.ticketModel.deleteOne({ ticket: id });
+        await this.ticketModel.deleteOne({ _id: id });
         return null;
     }
 };
