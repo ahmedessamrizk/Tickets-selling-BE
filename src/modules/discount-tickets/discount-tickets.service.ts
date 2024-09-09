@@ -168,6 +168,17 @@ export class DiscountTicketsService {
     if (!discountTicket) {
       throw new NotFoundException('Discount ticket not found');
     }
+    const ticket = await this.ticketsService.findOne({
+      _id: discountTicket.ticket,
+    }, 'expiry');
+
+    if(!ticket) {
+      throw new NotFoundException('Ticket not found');
+    }
+    if(ticket.expiry > new Date()) {
+      throw new ConflictException('Ticket not expired yet');
+    }
+    
     if (discountTicket.used >= discountTicket.limit) {
       throw new ConflictException(
         'Spin has reached its limit for winners size',
