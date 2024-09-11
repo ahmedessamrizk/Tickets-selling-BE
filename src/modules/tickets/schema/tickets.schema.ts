@@ -26,6 +26,9 @@ export class Ticket {
   @Prop({ required: true })
   expiry: Date;
 
+  @Prop({ type: Number, default: 0 })
+  sold: number;
+
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   createdBy: User;
 }

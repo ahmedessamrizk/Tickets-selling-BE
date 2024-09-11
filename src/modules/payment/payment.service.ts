@@ -132,6 +132,7 @@ export class PaymentService {
     // Prepare update operations
     const updateTicket = this.ticketsService.update(ticket['_id'], {
       quantity: ticket.quantity - payment.quantity,
+      sold: ticket.sold + payment.quantity,
     });
     payment.status = PaymentStatus.Success;
     const updatePayment = await (payment as PaymentDocument).save();

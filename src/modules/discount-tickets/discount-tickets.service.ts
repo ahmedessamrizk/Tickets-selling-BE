@@ -47,6 +47,16 @@ export class DiscountTicketsService {
       createDiscountTicketDto.ticket,
     );
 
+    if (checkTicket.sold === 0) {
+      throw new ConflictException('Ticket has not been sold yet');
+    }
+
+    if (createDiscountTicketDto.limit >= checkTicket.sold) {
+      throw new ConflictException(
+        'Limit cannot be greater than or equal to the number of tickets sold',
+      );
+    }
+
     let createdDiscountTicket = await this.discountTicketModel.create(
       createDiscountTicketDto,
     );
@@ -63,15 +73,15 @@ export class DiscountTicketsService {
     //check that ticketId is valid
     const checkTicket = await this.ticketsService.findOne(
       { _id: ticket },
-      'name expiry',
+      'name expiry sold',
     );
     if (!checkTicket) {
       throw new NotFoundException('The provided ticket does not exist');
     }
 
-    // if (checkTicket.expiry < new Date()) {
-    //   throw new ConflictException('The provided ticket has expired');
-    // }
+    if (checkTicket.expiry > new Date()) {
+      throw new ConflictException("The provided ticket hasn't expired yet");
+    }
 
     //check that ticketId is unique
     const discountTicket = await this.findOne({
@@ -100,7 +110,8 @@ export class DiscountTicketsService {
         .find()
         .limit(limit)
         .skip(skip)
-        .populate(this.populate),
+        .populate(this.populate)
+        .sort({ createdAt: -1 }),
       this.discountTicketModel.find().countDocuments(),
     ]);
     // Calculate the number of pages available
@@ -134,7 +145,7 @@ export class DiscountTicketsService {
       delete updateDiscountTaskDto.ticket;
     }
     if (updateDiscountTaskDto.ticket) {
-      console.log("entered")
+      console.log('entered');
       await this.checkValidTicket(updateDiscountTaskDto.ticket);
     }
 

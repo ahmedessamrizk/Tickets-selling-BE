@@ -5,4 +5,5 @@ export declare class UpdateTicketDto {
     price?: number;
     quantity?: number;
     expiry?: Date;
+    sold?: number;
 }

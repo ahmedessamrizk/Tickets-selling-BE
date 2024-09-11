@@ -32,5 +32,7 @@ import {
     @IsDateString()
     @IsOptional()
     expiry?: Date;
+
+    sold?: number;
   }
   

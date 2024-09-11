@@ -43,6 +43,12 @@ let DiscountTicketsService = class DiscountTicketsService {
     }
     async create(createDiscountTicketDto) {
         const checkTicket = await this.checkValidTicket(createDiscountTicketDto.ticket);
+        if (checkTicket.sold === 0) {
+            throw new common_1.ConflictException('Ticket has not been sold yet');
+        }
+        if (createDiscountTicketDto.limit >= checkTicket.sold) {
+            throw new common_1.ConflictException('Limit cannot be greater than or equal to the number of tickets sold');
+        }
         let createdDiscountTicket = await this.discountTicketModel.create(createDiscountTicketDto);
         return {
             ...createdDiscountTicket.toObject(),
@@ -52,9 +58,12 @@ let DiscountTicketsService = class DiscountTicketsService {
         };
     }
     async checkValidTicket(ticket) {
-        const checkTicket = await this.ticketsService.findOne({ _id: ticket }, 'name expiry');
+        const checkTicket = await this.ticketsService.findOne({ _id: ticket }, 'name expiry sold');
         if (!checkTicket) {
             throw new common_1.NotFoundException('The provided ticket does not exist');
+        }
+        if (checkTicket.expiry > new Date()) {
+            throw new common_1.ConflictException("The provided ticket hasn't expired yet");
         }
         const discountTicket = await this.findOne({
             ticket: ticket,
@@ -72,7 +81,8 @@ let DiscountTicketsService = class DiscountTicketsService {
                 .find()
                 .limit(limit)
                 .skip(skip)
-                .populate(this.populate),
+                .populate(this.populate)
+                .sort({ createdAt: -1 }),
             this.discountTicketModel.find().countDocuments(),
         ]);
         const totalPages = Math.ceil(totalDiscountTickets / limit);
@@ -95,7 +105,7 @@ let DiscountTicketsService = class DiscountTicketsService {
             delete updateDiscountTaskDto.ticket;
         }
         if (updateDiscountTaskDto.ticket) {
-            console.log("entered");
+            console.log('entered');
             await this.checkValidTicket(updateDiscountTaskDto.ticket);
         }
         const updateDiscountTicket = await this.discountTicketModel.findByIdAndUpdate(id, updateDiscountTaskDto, {

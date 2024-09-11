@@ -105,6 +105,7 @@ let PaymentService = class PaymentService {
         }
         const updateTicket = this.ticketsService.update(ticket['_id'], {
             quantity: ticket.quantity - payment.quantity,
+            sold: ticket.sold + payment.quantity,
         });
         payment.status = payment_enum_1.PaymentStatus.Success;
         const updatePayment = await payment.save();

@@ -43,6 +43,10 @@ __decorate([
     __metadata("design:type", Date)
 ], Ticket.prototype, "expiry", void 0);
 __decorate([
+    (0, mongoose_1.Prop)({ type: Number, default: 0 }),
+    __metadata("design:type", Number)
+], Ticket.prototype, "sold", void 0);
+__decorate([
     (0, mongoose_1.Prop)({ type: mongoose_2.Schema.Types.ObjectId, ref: 'User', required: true }),
     __metadata("design:type", users_schema_1.User)
 ], Ticket.prototype, "createdBy", void 0);

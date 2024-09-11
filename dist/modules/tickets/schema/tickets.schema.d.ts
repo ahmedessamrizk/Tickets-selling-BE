@@ -8,6 +8,7 @@ export declare class Ticket {
     price: number;
     quantity: number;
     expiry: Date;
+    sold: number;
     createdBy: User;
 }
 declare const TicketSchema: MongooseSchema<Ticket, import("mongoose").Model<Ticket, any, any, any, import("mongoose").Document<unknown, any, Ticket> & Ticket & {
