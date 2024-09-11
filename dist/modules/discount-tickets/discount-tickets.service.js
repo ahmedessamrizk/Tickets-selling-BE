@@ -91,12 +91,12 @@ let DiscountTicketsService = class DiscountTicketsService {
     async findById(id) {
         let discountTicket = (await this.discountTicketModel
             .findById(id)
-            .select('name ticket limit used winners'));
+            .select('name ticket limit used winners').populate({ path: 'ticket', select: 'sold' }));
         if (!discountTicket) {
             throw new common_1.NotFoundException('Discount ticket not found');
         }
         discountTicket = discountTicket.toObject();
-        const users = await this.paymentService.getUsersForDiscountTicket(discountTicket.ticket, discountTicket.winners);
+        const users = await this.paymentService.getUsersForDiscountTicket(discountTicket.ticket._id, discountTicket.winners);
         Object.assign(discountTicket, { users });
         return discountTicket;
     }

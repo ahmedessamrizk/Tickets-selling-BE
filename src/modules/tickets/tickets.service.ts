@@ -100,6 +100,7 @@ export class TicketsService {
     const ticketsWithoutDiscount = await this.ticketModel
       .find({
         _id: { $nin: discountTicketIds },
+        expiry: { $lt: new Date() },
       })
       .select('name'); // Retrieve only the 'name' field and exclude '_id'
 

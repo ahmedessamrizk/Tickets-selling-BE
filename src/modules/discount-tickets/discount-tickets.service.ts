@@ -123,13 +123,13 @@ export class DiscountTicketsService {
   async findById(id: string): Promise<DiscountTicket> {
     let discountTicket = (await this.discountTicketModel
       .findById(id)
-      .select('name ticket limit used winners')) as any;
+      .select('name ticket limit used winners').populate({path: 'ticket', select: 'sold'})) as any;
     if (!discountTicket) {
       throw new NotFoundException('Discount ticket not found');
     }
     discountTicket = discountTicket.toObject();
     const users = await this.paymentService.getUsersForDiscountTicket(
-      discountTicket.ticket,
+      discountTicket.ticket._id,
       discountTicket.winners,
     );
 
